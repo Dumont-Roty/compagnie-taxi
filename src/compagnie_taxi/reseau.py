@@ -9,7 +9,6 @@ Je définie chaque éléments de la problématique :
     - Trajet (point A --> point B ==> OPTIMISATION)
 """
 class emplacement(object):
-    
     def __init__(self, numero:int, ralentissement : bool):
         self.numero : int = numero # numéro = emplacement de la ville
         self.voisins : List[emplacement] = [] # liste des voisins de l'emplacement
@@ -27,8 +26,6 @@ class emplacement(object):
     def __hash__(self):
         return hash(self.numero) # Hash de l'emplacement, nécessaire pour le graphe et doit etre unique
         
-ListeEmplacement : List[emplacement] = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"] # liste des emplacements
-
 class reseau(object): # Reseau ouy trajet de la compagnie ?
     """
     Indique tout le réseau de transport de la compagnie
@@ -45,6 +42,7 @@ class reseau(object): # Reseau ouy trajet de la compagnie ?
             return True
         return False
 
+
 class trajet(object):
     """
     Je cherche à ce que le trajet relie 2 points
@@ -57,14 +55,8 @@ class trajet(object):
         "Le temps de trajet entre le point " + self.départ + " et le point d'arrivé "+ self.arrivé+ " est de "
         T = "____durée___"
         return T
+
+# Est ce que on doit définir les voisins comme un objet ? Information immuable ?
+
         
-        
-        
-class routes(object): # Routes ou trajet en général ?
-    """
-    Indique tous les points voisins qui relient les emplacements (routes à prendre).
     
-    Est ce que indiquer les voisins revient à faire une giga matrice où on indique la distance entre les voisins ? Peut etre trop rigide (ajout d'une nouvelle station impossible, etc...)
-    """
-    def __init__(self, listeEmplacement : list[emplacement]): 
-        self.listeEmplacement : list[emplacement] = listeEmplacement # Les routes sont des lignes d'emplacement
