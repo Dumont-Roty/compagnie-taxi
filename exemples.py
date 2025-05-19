@@ -33,10 +33,10 @@ def EstVoisin(a, b):
     # Vérifie si emplacements[a] est voisin de emplacements[b]
     est_voisin = any(voisin.numero == a for voisin, _ in emplacements[b].voisins)
     if est_voisin:
-        print(f"{a} et {b} sont voisins")
+        #print(f"{a} et {b} sont voisins")
         return True
     else:
-        print(f"{a} et {b} ne sont pas voisins")
+        #print(f"{a} et {b} ne sont pas voisins")
         return False
 
 EstVoisin(1, 2)
