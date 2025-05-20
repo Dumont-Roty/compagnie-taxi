@@ -30,13 +30,10 @@ def EstVoisin(a, b):
         emplacements[x].voisins.append((emplacements[y], duree))
         emplacements[y].voisins.append((emplacements[x], duree))
 
-    # Vérifie si emplacements[a] est voisin de emplacements[b]
     est_voisin = any(voisin.numero == a for voisin, _ in emplacements[b].voisins)
     if est_voisin:
-        #print(f"{a} et {b} sont voisins")
         return True
     else:
-        #print(f"{a} et {b} ne sont pas voisins")
         return False
 
 EstVoisin(1, 2)

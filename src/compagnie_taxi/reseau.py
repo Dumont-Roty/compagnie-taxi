@@ -1,21 +1,31 @@
 from typing import Tuple, List
 from graphlib import *
+from compagnie_taxi.ville import *
+
 
 """
 Je définie chaque éléments de la problématique :
     - emplacement (point d'interet dans la ville)
+        Point de base de l'exercice, c'est la liste de produit qui peut etre contenu dans notre recette. Tous les emplacements ne sont pas forcément bon à prendre mais il est necessaire d'en avoir.
+        On va définir les points avec leurs voisins.
+        EST CE QUE LES RALENTISSEMENTS SERONT DANS LES EMPLACEMENTS (je pense pas car ca ne change pas la relation entre les 2)
+    - client (c'est le point d'arrivé et le point de départ mais n'indique pas les démarches à suivre)
+        Il représente le début et la fin de la recette. je sais pas si faut le définir mais c'est aussi un questionnement future pour la problématique. (ajout du taxi plus tard ?)
+    - Trajet (point A --> point B ==> OPTIMISATION)
+        C'est la recette, or elle dépend du client et de sa destination (peut etre inutile je sais pas encore --> Trajet dans client peut etre ?)
     - reseau (Tout ce qui compose le reseau de la ville)
     - lignes (connexion entre les emplacements --> Chaque points et chaque durée ?)
-    - Trajet (point A --> point B ==> OPTIMISATION)
 """
-class emplacement(object):
+
+
+class emplacement(object):  
     def __init__(self, numero : int, ralentissement : bool):
         self.numero : int = numero # numéro = emplacement de la ville
         self.voisins : list = [] # liste des voisins de l'emplacement
         self.travaux : bool = ralentissement
         
     def __str__(self):
-        return str(self.numero) # 
+        return str(self.numero)
     
     def __eq__(self, other):
         return self.numero == other.numero # Equivalence de self est self 
@@ -26,9 +36,9 @@ class emplacement(object):
     def __hash__(self):
         return hash(str(self.numero)) # Hash de l'emplacement, nécessaire pour le graphe et doit etre unique 
     
-    def EstVoisin(self, autre):
+    def EstVoisin(self, other):
         """Retourne True si 'autre' est un voisin de self."""
-        return any(voisin.numero == autre.numero for voisin, _ in self.voisins)
+        return any(voisin.numero == other.numero for voisin, _ in self.voisins)
 
     @staticmethod
     def EstVoisinStatic(a, b) -> bool:
@@ -69,6 +79,28 @@ class emplacement(object):
         else:
             #print(f"{a} et {b} ne sont pas voisins")
             return False
+
+class client(object):
+    """
+    Client de la compagnie de taxi
+    """
+    def __init__(self, id : int, pointDEP : emplacement, pointARR : emplacement):
+        self.id : int = id
+        self.depart : emplacement = pointDEP
+        self.arrive : emplacement = pointARR
+        
+
+class trajet(object):
+    """
+    Le trajet est le parcours que fait le taxi avec le client. Il va relier tous les points (de d&part à l'arrivé)
+    """
+    def __init__(self, course : List[emplacement], durée : int):
+        self.course : List[emplacement] = course
+        self.temps : int = durée
+    
+    def __str__(self): # indique le temps de trajet et les points d'intéret de la course
+        return
+
 class reseau(object): # Reseau ouy trajet de la compagnie ?
     """
     Indique tout le réseau de transport de la compagnie
@@ -86,19 +118,6 @@ class reseau(object): # Reseau ouy trajet de la compagnie ?
         return False
     
     
-class trajet(object):
-    """
-    Je cherche à ce que le trajet relie 2 points
-    """
-    def __init__(self, départ : emplacement, arrivé : emplacement, durée : int):
-        self.départ : emplacement = départ
-        self.arrivé : emplacement = arrivé
-    
-    def __str__(self): # indique le temps de trajet 
-        "Le temps de trajet entre le point " + self.départ + " et le point d'arrivé "+ self.arrivé+ " est de "
-        T = "____durée___"
-        return T
-
 # Est ce que on doit définir les voisins comme un objet ? Information immuable ?
 
 # def EstVoisin(a, b):
