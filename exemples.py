@@ -1,4 +1,4 @@
-from src.compagnie_taxi.reseau import *
+from compagnie_taxi.reseau_taxi import *
 
 def EstVoisin(a, b):
     """

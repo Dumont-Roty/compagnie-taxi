@@ -1,13 +1,13 @@
 # je crée la ville comme on a crée le réseau RATP dans le projet RATP.
 
-from compagnie_taxi.reseau import *
+from compagnie_taxi.reseau_taxi import *
 from typing import List, Tuple
-from compagnie_taxi.reseau import reseau
+from compagnie_taxi.reseau_taxi import Reseau
 
 
-ListeEmplacement : List[reseau.emplacement] = [] # 1 emplacement est 1 point d'arret du taxi
+ListeEmplacement : List[Reseau.emplacement] = [] # 1 emplacement est 1 point d'arret du taxi
 
-ListeRoutes : List[(Tuple[reseau.emplacement, reseau.emplacement], int)] = [] # Les routes sont ce qui relie 2 emplacement (Tuple) et ça en un temps variable
+ListeRoutes : List[(Tuple[Reseau.emplacement, Reseau.emplacement], int)] = [] # Les routes sont ce qui relie 2 emplacement (Tuple) et ça en un temps variable
 
 def defListEmplacement() -> None:
     """
@@ -46,10 +46,10 @@ def defListeRoutes() -> None :
         ListeEmplacement[x-1].voisins.append((ListeEmplacement[y-1], duree))
         ListeEmplacement[y-1].voisins.append((ListeEmplacement[x-1], duree))
         
-    for index, Emplacement in enumerate(ListeEmplacement):
-        for voisin in ListeEmplacement[(index + 1):]:
-            if Emplacement.EstVoisin(voisin):
-                ListeRoutes.append((Emplacement, voisin, duree))
+    for index, emplacement in enumerate(ListeEmplacement):
+        for voisin, duree in ListeEmplacement[(index + 1):]:
+            if emplacement.EstVoisin(voisin):
+                ListeRoutes.append((emplacement, voisin, duree))
 
 def init_ville(G):
     defListEmplacement()
