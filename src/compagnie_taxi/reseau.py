@@ -9,13 +9,13 @@ Je définie chaque éléments de la problématique :
     - Trajet (point A --> point B ==> OPTIMISATION)
 """
 class emplacement(object):
-    def __init__(self, numero:int, ralentissement : bool):
+    def __init__(self, numero : int, ralentissement : bool):
         self.numero : int = numero # numéro = emplacement de la ville
         self.voisins : list = [] # liste des voisins de l'emplacement
         self.travaux : bool = ralentissement
         
     def __str__(self):
-        return "Numéro emplacement : " + self.numero # 
+        return str(self.numero) # 
     
     def __eq__(self, other):
         return self.numero == other.numero # Equivalence de self est self 
@@ -24,7 +24,7 @@ class emplacement(object):
         return self.numero != other.numero # Non équivalence de self n'est pas self
     
     def __hash__(self):
-        return hash(self.numero) # Hash de l'emplacement, nécessaire pour le graphe et doit etre unique 
+        return hash(str(self.numero)) # Hash de l'emplacement, nécessaire pour le graphe et doit etre unique 
     
     def EstVoisin(self, autre):
         """Retourne True si 'autre' est un voisin de self."""

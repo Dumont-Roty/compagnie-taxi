@@ -40,6 +40,6 @@ G.add_edges_from(ListeRoutes)
 
 
 #On dessine le graphe
-nx.draw(G, )
+nx.draw(G, with_labels=True)
 
 plt.show()
