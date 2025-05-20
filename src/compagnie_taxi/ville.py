@@ -1,7 +1,9 @@
 # je crée la ville comme on a crée le réseau RATP dans le projet RATP.
 
-from src.compagnie_taxi.reseau import *
-from typing import List
+from compagnie_taxi.reseau import *
+from typing import List, Tuple
+from compagnie_taxi.reseau import reseau
+
 
 ListeEmplacement : List[reseau.emplacement] = [] # 1 emplacement est 1 point d'arret du taxi
 
@@ -12,7 +14,7 @@ def defListEmplacement() -> None:
     Fonction qui permet de définir la liste des emplacements
     """
     
-    emplacements = [emplacement(i, False) for i in range(1, 17)] # les empalcements vont de 1 à 16 => range(1,17)
+    emplacements = [emplacements(i, False) for i in range(1, 17)] # les empalcements vont de 1 à 16 => range(1,17)
     for point in emplacements : # Pour chaque points, on les mets dans la liste des emplacements
         ListeEmplacement.append(point)
         
@@ -47,4 +49,11 @@ def defListeRoutes() -> None :
     for index, Emplacement in enumerate(ListeEmplacement):
         for voisin in ListeEmplacement[(index + 1):]:
             if Emplacement.EstVoisin(voisin):
-                ListeRoutes.append((Emplacement, voisin))
+                ListeRoutes.append((Emplacement, voisin, duree))
+
+def init_ville(G):
+    defListEmplacement()
+    defListeRoutes()
+
+    G.add_nodes_from(ListeEmplacement)
+    G.add_edges_from([(e1.numero, e2.numero) for e1, e2, _ in ListeRoutes])

@@ -1,6 +1,7 @@
 from typing import Tuple, List
 from graphlib import *
 from compagnie_taxi.ville import *
+from dataclasses import dataclass
 
 
 """
@@ -40,6 +41,10 @@ class emplacement(object):
         """Retourne True si 'autre' est un voisin de self."""
         return any(voisin.numero == other.numero for voisin, _ in self.voisins)
 
+    def __repr__(self):
+        return self.numero
+    
+    
     @staticmethod
     def EstVoisinStatic(a, b) -> bool:
         """
@@ -105,8 +110,8 @@ class reseau(object): # Reseau ouy trajet de la compagnie ?
     """
     Indique tout le réseau de transport de la compagnie
     """
-    def __init__(self, emplacement : str, routes : str, duree : int, compagnie : int, ralentissment : bool=False): # Pas sur pour le ralentissement --> bool d'un emplacement ?
-        self.numero : str = emplacement 
+    def __init__(self, emplacement : str, routes : str, duree : int, compagnie : int = None, ralentissment : bool = False): # Pas sur pour le ralentissement --> bool d'un emplacement ?
+        self.emplacement : str = emplacement 
         self.connexion : str = routes
         self.tempstrajet : int = duree
         self.taxi : int = compagnie # Taxi de la compagnie dans la ville (int car plusieurs taxi ?)
