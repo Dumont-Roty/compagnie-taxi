@@ -23,7 +23,6 @@ class Emplacement(object):
     def __init__(self, numero : int, ralentissement : bool):
         self.numero : int = numero # numéro = emplacement de la ville
         self.voisins : list = [] # liste des voisins de l'emplacement
-        self.travaux : bool = ralentissement
         
     def __str__(self):
         return str(self.numero)
@@ -42,41 +41,48 @@ class Emplacement(object):
         return any(voisin.numero == other.numero for voisin, _ in self.voisins)
 
     def __repr__(self):
-        return self.numero
+        return f"Emplacement(numero={self.numero}, voisins={[v.numero for v in self.voisins]})"
     
     
-class Client(object):
-    """
-    Client de la compagnie de taxi
-    """
-    def __init__(self, id : int, pointDEP : emplacement, pointARR : emplacement):
-        self.id : int = id
-        self.depart : emplacement = pointDEP
-        self.arrive : emplacement = pointARR
-        
+# class Client(object):
+#     """
+#     Client de la compagnie de taxi
+#     """
+#     def __init__(self, id : int, pointDEP : Emplacement, pointARR : Emplacement):
+#         self.id : int = id
+#         self.depart : Emplacement = pointDEP
+#         self.arrive : Emplacement = pointARR
 
-class Trajet(object):
+class Route(object):
     """
-    Le trajet est le parcours que fait le taxi avec le client. Il va relier tous les points (de d&part à l'arrivé)
+    La Route est la liaisons des 2 emplacements. Ce sont des voisins
     """
-    def __init__(self, course : List[emplacement], durée : int):
-        self.course : List[emplacement] = course
-        self.temps : int = durée
+    def __init__(self, emplacement1 : Emplacement, emplacement2 : Emplacement): #, durée : int):
+        self.emplacement1 : Emplacement = emplacement1
+        self.emplacement2 : Emplacement = emplacement2
+        # self.temps : int = durée
     
-    def __str__(self): # indique le temps de trajet et les points d'intéret de la course
-        return
+    def __repr__(self):
+        return f"Route(emplacement1={self.emplacement1.numero}, emplacement2={self.emplacement2.numero})"
 
 class Reseau(object): # Reseau ouy trajet de la compagnie ?
     """
     Indique tout le réseau de transport de la compagnie
     """
-    def __init__(self, emplacement : str, routes : str, duree : int, compagnie : int = None, ralentissment : bool = False): # Pas sur pour le ralentissement --> bool d'un emplacement ?
-        self.emplacement : str = emplacement 
-        self.connexion : str = routes
-        self.tempstrajet : int = duree
-        self.taxi : int = compagnie # Taxi de la compagnie dans la ville (int car plusieurs taxi ?)
-        self.ralentissement : bool = ralentissment
-        
+    def __init__(self): # Pas sur pour le ralentissement --> bool d'un emplacement ?
+        self.ListeEmplacement : List[Emplacement] = []
+        self.ListeRoutes : List[Tuple[Emplacement, Emplacement]] = []
+    
+    def ajouter_emplacement(self, emplacement : int):
+        self.ListeEmplacement.append(emplacement)
+    
+    def ajouter_routes(self, routes : Tuple[Emplacement,Emplacement]):
+        self.ListeRoutes.append(routes)
+    
+    def initialiser_voisins(self):
+        for emplacement in self.ListeEmplacement:
+            emplacement.voisins = []
+    
     def __eq__(self, other): # Equivalence entre le réseau
         if self.numero == other.numero and self.tempstrajet == other.tempstrajet:
             return True
