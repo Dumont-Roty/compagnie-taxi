@@ -22,6 +22,7 @@ class Emplacement(object):
     def __init__(self, numero : int):
         self.numero : int = numero # numéro = emplacement de la ville
         self.voisins : list = [] # liste des voisins de l'emplacement
+        # Dans le principe des gares, on différencie les lignes des voisins mais pas ici car on prends la route.
         
     def __str__(self):
         return str(self.numero)
@@ -39,6 +40,34 @@ class Emplacement(object):
         """Retourne True si 'autre' est un voisin de self."""
         return any(voisin.numero == other.numero for voisin in self.voisins)
 
+    def CalculerTrajetVoisins(self, other, destination):
+        """
+        Calculer le temps de trajet entre 2 emplacements.
+        
+        On fixe le trajet à 1 pour le graph
+        """
+        if not self.EstVoisin(other):
+            raise ValueError(f"Il n'y a pas de routes qui relie l'emplacement : {other} de l'emplacement {self}")
+        if ( other.numero == destination.numero):
+            return 1
+        EmplacementActuelle = []
+        EmplacementsVisites = []
+        for emp2 in other.Route:
+            for emp1 in self.Route:
+                if ( emp1 == emp2 ):
+                    EmplacementActuelle.append(emp1)
+            for emp3 in self.Route:
+                if ( emp2 == emp1 ):
+                    EmplacementsVisites.append(emp2)
+                    
+        for emp in EmplacementsVisites:
+            if emp in EmplacementActuelle:
+                return 1
+        return 10
+    
+        
+        
+        
     def __repr__(self):
         return f"Emplacement(numero={self.numero}, voisins={[v.numero for v in self.voisins]})"
     
@@ -52,17 +81,7 @@ class Emplacement(object):
 #         self.depart : Emplacement = pointDEP
 #         self.arrive : Emplacement = pointARR
 
-class Route(object):
-    """
-    La Route est la liaisons des 2 emplacements. Ce sont des voisins
-    """
-    def __init__(self, emplacement1 : Emplacement, emplacement2 : Emplacement): #, durée : int):
-        self.emplacement1 : Emplacement = emplacement1
-        self.emplacement2 : Emplacement = emplacement2
-        # self.temps : int = durée
-    
-    def __repr__(self):
-        return f"Route(emplacement1={self.emplacement1.numero}, emplacement2={self.emplacement2.numero})"
+
 
 class Reseau(object): # Reseau ouy trajet de la compagnie ?
     """
@@ -92,3 +111,8 @@ class Reseau(object): # Reseau ouy trajet de la compagnie ?
 
 # def EstVoisin(a, b):
 
+@dataclass( frozen = True, unsafe_hash=True)
+class Route:
+    emplacement : List[Emplacement]
+    numero : str
+    

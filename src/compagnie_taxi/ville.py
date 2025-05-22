@@ -7,10 +7,11 @@ from typing import List, Tuple
 ListeEmplacement : List[int] = [] # 1 emplacement est 1 point d'arret du taxi
 
 # Test si ListeRoutes prends comme source la class Emplacement (en enlevant la duree)
-
 ListeRoutes : List[Tuple[int, int]] = []
 
 #ListeRoutes : List[(Tuple[Reseau.emplacement, Reseau.emplacement], int)] = [] # Les routes sont ce qui relie 2 emplacement (Tuple) et ça en un temps variable
+
+ListeDuree : List[int] = []
 
 def defListEmplacement() -> None:
     """
@@ -44,34 +45,32 @@ def defListeRoutes() -> None :
     (15, 14), (15, 16)
     ]
     
-    # voisinages = [
-    #     (1, 2, 5), (1, 3, 9), (1, 4, 4),
-    #     (2, 5, 3), (2, 6, 2),
-    #     (3, 4, 4), (3, 6, 1),
-    #     (4, 7, 7),
-    #     (5, 8, 4), (5, 9, 2), (5, 10, 9),
-    #     (6, 7, 3), (6, 10, 9), (6, 11, 6),
-    #     (7, 11, 8), (7, 15, 5),
-    #     (8, 12, 5),
-    #     (9, 8, 3), (9, 13, 10),
-    #     (10, 9, 6), (10, 13, 5), (10, 14, 1),
-    #     (11, 14, 2),
-    #     (12, 16, 9),
-    #     (13, 12, 4), (13, 14, 3),
-    #     (14, 16, 4),
-    #     (15, 14, 4), (15, 16, 3)
-    # ]
+    # Remplace la liste voisinages par celle avec les durées :
+    voisinages = [
+        (1, 2, 5), (1, 3, 9), (1, 4, 4),
+        (2, 5, 3), (2, 6, 2),
+        (3, 4, 4), (3, 6, 1),
+        (4, 7, 7),
+        (5, 8, 4), (5, 9, 2), (5, 10, 9),
+        (6, 7, 3), (6, 10, 9), (6, 11, 6),
+        (7, 11, 8), (7, 15, 5),
+        (8, 12, 5),
+        (9, 8, 3), (9, 13, 10),
+        (10, 9, 6), (10, 13, 5), (10, 14, 1),
+        (11, 14, 2),
+        (12, 16, 9),
+        (13, 12, 4), (13, 14, 3),
+        (14, 16, 4),
+        (15, 14, 4), (15, 16, 3)
+    ]
     
     # Ajout des voisins en fonction de la liste voisinages
-    for x, y in voisinages:
-        ListeEmplacement[x-1].voisins.append(ListeEmplacement[y-1])
-        ListeEmplacement[y-1].voisins.append(ListeEmplacement[x-1])
-
-    # Ajout des routes
-    for index, emplacement in enumerate(ListeEmplacement):
-        for voisin in emplacement.voisins:
-            if emplacement.EstVoisin(voisin):
-                ListeRoutes.append((emplacement, voisin))
+    for e1, e2, duree in voisinages:
+        ListeEmplacement[e1-1].voisins.append(ListeEmplacement[e2-1])
+        ListeEmplacement[e2-1].voisins.append(ListeEmplacement[e1-1])
+        ListeRoutes.append((ListeEmplacement[e1-1], ListeEmplacement[e2-1], duree))
+        ListeRoutes.append((ListeEmplacement[e2-1], ListeEmplacement[e1-1], duree))
+        ListeDuree.append(duree)
 
 
 def init_ville(G):
