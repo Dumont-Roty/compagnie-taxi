@@ -1,15 +1,14 @@
 # je crée la ville comme on a crée le réseau RATP dans le projet RATP.
 
-from compagnie_taxi.reseau_taxi import *
-from typing import List, Tuple
 from compagnie_taxi.reseau_taxi import Emplacement
+from typing import List, Tuple
 
-
-ListeEmplacement : List[Emplacement.numero] = [] # 1 emplacement est 1 point d'arret du taxi
+#ListeEmplacement : List[Emplacement.numero] = [] # 1 emplacement est 1 point d'arret du taxi
+ListeEmplacement : List[int] = [] # 1 emplacement est 1 point d'arret du taxi
 
 # Test si ListeRoutes prends comme source la class Emplacement (en enlevant la duree)
 
-ListeRoutes : List[Tuple[Emplacement.numero, Emplacement.voisins]] = []
+ListeRoutes : List[Tuple[int, int]] = []
 
 #ListeRoutes : List[(Tuple[Reseau.emplacement, Reseau.emplacement], int)] = [] # Les routes sont ce qui relie 2 emplacement (Tuple) et ça en un temps variable
 
@@ -18,7 +17,7 @@ def defListEmplacement() -> None:
     Fonction qui permet de définir la liste des emplacements
     """
     
-    emplacements = [emplacements(i) for i in range(1, 17)] # les empalcements vont de 1 à 16 => range(1,17)
+    emplacements = [Emplacement(i) for i in range(1, 17)] # les empalcements vont de 1 à 16 => range(1,17)
     for point in emplacements : # Pour chaque points, on les mets dans la liste des emplacements
         ListeEmplacement.append(point)
         

@@ -1,6 +1,5 @@
 from typing import Tuple, List
 from graphlib import *
-from compagnie_taxi.ville import *
 from dataclasses import dataclass
 
 
@@ -20,7 +19,7 @@ Je définie chaque éléments de la problématique :
 
 
 class Emplacement(object):  
-    def __init__(self, numero : int, ralentissement : bool):
+    def __init__(self, numero : int):
         self.numero : int = numero # numéro = emplacement de la ville
         self.voisins : list = [] # liste des voisins de l'emplacement
         
@@ -38,7 +37,7 @@ class Emplacement(object):
     
     def EstVoisin(self, other):
         """Retourne True si 'autre' est un voisin de self."""
-        return any(voisin.numero == other.numero for voisin, _ in self.voisins)
+        return any(voisin.numero == other.numero for voisin in self.voisins)
 
     def __repr__(self):
         return f"Emplacement(numero={self.numero}, voisins={[v.numero for v in self.voisins]})"
