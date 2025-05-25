@@ -5,13 +5,9 @@ from typing import List, Tuple
 
 #ListeEmplacement : List[Emplacement.numero] = [] # 1 emplacement est 1 point d'arret du taxi
 ListeEmplacement : List[int] = [] # 1 emplacement est 1 point d'arret du taxi
-
 # Test si ListeRoutes prends comme source la class Emplacement (en enlevant la duree)
 ListeRoutes : List[Tuple[int, int]] = []
 
-#ListeRoutes : List[(Tuple[Reseau.emplacement, Reseau.emplacement], int)] = [] # Les routes sont ce qui relie 2 emplacement (Tuple) et ça en un temps variable
-
-ListeDuree : List[int] = []
 
 def defListEmplacement() -> None:
     """
@@ -66,12 +62,9 @@ def defListeRoutes() -> None :
     
     # Ajout des voisins en fonction de la liste voisinages
     for e1, e2, duree in voisinages:
-        ListeEmplacement[e1-1].voisins.append(ListeEmplacement[e2-1])
-        ListeEmplacement[e2-1].voisins.append(ListeEmplacement[e1-1])
         ListeRoutes.append((ListeEmplacement[e1-1], ListeEmplacement[e2-1], duree))
         ListeRoutes.append((ListeEmplacement[e2-1], ListeEmplacement[e1-1], duree))
-        ListeDuree.append(duree)
-
+    return ListeRoutes
 
 def init_ville(G):
     defListEmplacement()

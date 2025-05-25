@@ -2,7 +2,6 @@ from typing import Tuple, List
 from graphlib import *
 from dataclasses import dataclass
 
-
 """
 Je définie chaque éléments de la problématique :
     - emplacement (point d'interet dans la ville)
@@ -36,6 +35,9 @@ class Emplacement(object):
     def __hash__(self):
         return hash(str(self.numero)) # Hash de l'emplacement, nécessaire pour le graphe et doit etre unique 
     
+    def __lt__(self, other):
+        return self.numero < other.numero
+    
     def EstVoisin(self, other):
         """Retourne True si 'autre' est un voisin de self."""
         return any(voisin.numero == other.numero for voisin in self.voisins)
@@ -56,18 +58,49 @@ class Emplacement(object):
             for emp1 in self.Route:
                 if ( emp1 == emp2 ):
                     EmplacementActuelle.append(emp1)
+                    
             for emp3 in self.Route:
-                if ( emp2 == emp1 ):
-                    EmplacementsVisites.append(emp2)
+                if ( emp3 == emp2 ):
+                    EmplacementsVisites.append(emp3)
                     
         for emp in EmplacementsVisites:
             if emp in EmplacementActuelle:
                 return 1
-        return 10
+        return 30
     
-        
-        
-        
+    def TrajetOpti(self, destination, ListeRoutes):
+        # Création d'un dictionnaire pour retrouver la durée entre deux emplacements
+        durees = {}
+        for e1, e2, duree in ListeRoutes:
+            durees[(e1, e2)] = duree
+
+        import heapq
+        distances = {emp: float('inf') for emp in [self] + list(self.voisins)}
+        distances[self] = 0
+        previous = {self: None}
+        queue = [(0, self)]
+
+        while queue:
+            dist, current = heapq.heappop(queue)
+            if current == destination:
+                break
+            for voisin in current.voisins:
+                alt = dist + durees.get((current, voisin), float('inf'))
+                if alt < distances.get(voisin, float('inf')):
+                    distances[voisin] = alt
+                    previous[voisin] = current
+                    heapq.heappush(queue, (alt, voisin))
+
+        # Reconstruction du chemin
+        chemin = []
+        curr = destination
+        while curr is not None:
+            chemin.append(curr)
+            curr = previous.get(curr)
+        chemin.reverse()
+        return chemin, distances[destination]
+            
+            
     def __repr__(self):
         return f"Emplacement(numero={self.numero}, voisins={[v.numero for v in self.voisins]})"
     
@@ -111,8 +144,7 @@ class Reseau(object): # Reseau ouy trajet de la compagnie ?
 
 # def EstVoisin(a, b):
 
-@dataclass( frozen = True, unsafe_hash=True)
+@dataclass( frozen = True, unsafe_hash=True )
 class Route:
     emplacement : List[Emplacement]
     numero : str
-    
