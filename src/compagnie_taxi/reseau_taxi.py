@@ -69,36 +69,49 @@ class Emplacement(object):
         return 30
     
     def TrajetOpti(self, destination, ListeRoutes):
+        """
+        Calcule le chemin optimal (plus court) entre self et destination en utilisant un algorithme de type Dijkstra.
+        """
         # Création d'un dictionnaire pour retrouver la durée entre deux emplacements
         durees = {}
         for e1, e2, duree in ListeRoutes:
             durees[(e1, e2)] = duree
 
-        import heapq
-        distances = {emp: float('inf') for emp in [self] + list(self.voisins)}
-        distances[self] = 0
+        # Initialisation
+        parcourus = set()
+        valeur_dict = {self: 0}
         previous = {self: None}
-        queue = [(0, self)]
+        a_explorer = [self]
 
-        while queue:
-            dist, current = heapq.heappop(queue)
-            if current == destination:
+        while a_explorer:
+            # On prend le noeud avec la plus petite valeur actuelle
+            courant = min(a_explorer, key=lambda x: valeur_dict.get(x, float('inf')))
+            a_explorer.remove(courant)
+            parcourus.add(courant)
+
+            if courant == destination:
                 break
-            for voisin in current.voisins:
-                alt = dist + durees.get((current, voisin), float('inf'))
-                if alt < distances.get(voisin, float('inf')):
-                    distances[voisin] = alt
-                    previous[voisin] = current
-                    heapq.heappush(queue, (alt, voisin))
+
+            for voisin in courant.voisins:
+                if voisin in parcourus:
+                    continue
+                cout = valeur_dict[courant] + durees.get((courant, voisin), float('inf'))
+                if cout < valeur_dict.get(voisin, float('inf')):
+                    valeur_dict[voisin] = cout
+                    previous[voisin] = courant
+                    if voisin not in a_explorer:
+                        a_explorer.append(voisin)
 
         # Reconstruction du chemin
         chemin = []
         curr = destination
+        if curr not in valeur_dict:
+            return [], float('inf')  # Pas de chemin trouvé
         while curr is not None:
             chemin.append(curr)
             curr = previous.get(curr)
         chemin.reverse()
-        return chemin, distances[destination]
+        return chemin, valeur_dict[destination]
             
             
     def __repr__(self):

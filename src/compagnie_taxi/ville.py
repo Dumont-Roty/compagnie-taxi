@@ -23,24 +23,7 @@ def defListeRoutes() -> None :
     Fonction qui va nous permettre de définir la liste des routes qui connectent les emplacements. Chaque emplacements n'a pas forcément de routes qui le relie à son voisin (de numéro).
     On va en profiter pour ajouter le temps de trajet entre les points.
     """
-    voisinages = [
-    (1, 2), (1, 3), (1, 4),
-    (2, 5), (2, 6),
-    (3, 4), (3, 6),
-    (4, 7),
-    (5, 8), (5, 9), (5, 10),
-    (6, 7), (6, 10), (6, 11),
-    (7, 11), (7, 15),
-    (8, 12),
-    (9, 8), (9, 13),
-    (10, 9), (10, 13), (10, 14),
-    (11, 14),
-    (12, 16),
-    (13, 12), (13, 14),
-    (14, 16),
-    (15, 14), (15, 16)
-    ]
-    
+   
     # Remplace la liste voisinages par celle avec les durées :
     voisinages = [
         (1, 2, 5), (1, 3, 9), (1, 4, 4),
