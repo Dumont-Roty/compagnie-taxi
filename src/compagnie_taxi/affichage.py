@@ -8,29 +8,61 @@ import networkx as nx
 def AfficherCarte():
     ville.defListEmplacement()
     ville.defListeRoutes()
-    
+    fluctuations = {
+        (9, 13): 1.2,   # Ralentissement
+        (10, 14): 0.8   # Fluidification
+    }
     G = nx.Graph()
-    
-    #G.add_nodes_from(ville.ListeEmplacement)
-    # Pas besoin de faire ca, on peut directement ajouter les routes car les emplacements sont déjà ajoutés dans la liste des routes
+    edges = []
+    for e1, e2, duree in ville.ListeRoutes:
+        coef = 1.0
+        key = (e1.numero, e2.numero)
+        key_inv = (e2.numero, e1.numero)
+        if key in fluctuations:
+            coef = fluctuations[key]
+        elif key_inv in fluctuations:
+            coef = fluctuations[key_inv]
+        duree_mod = int(duree * coef)
+        edges.append((e1.numero, e2.numero, {'duree': duree_mod}))
+    G.add_edges_from(edges)
 
-    G.add_edges_from([(e1.numero, e2.numero, {'duree': duree}) for e1, e2, duree in ville.ListeRoutes])
-
-    #Pour afficher les poids sur les arêtes :
-    pos = nx.spring_layout(G)
+    pos = nx.spring_layout(G, weight='duree')
     nx.draw(G, pos, with_labels=True)
     edge_labels = nx.get_edge_attributes(G, 'duree')
     nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-
     plt.show()
     
 def CalculTrajet():
-    print("Séléctionnez un point de départ (1-16) : ")
-    depart = ville.ListeEmplacement[int(input()) - 1]
-    print("Séléctionnez un point d'arrivée (1-16) : ")
-    destination = ville.ListeEmplacement[int(input()) - 1]
-    chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes)
-    print("Chemin optimal :", [e.numero for e in chemin], "Distance :", distance)
+    while True:
+        try:
+            depart_str = input("Séléctionnez un point de départ (1-16) : ")
+            if not depart_str.isdigit():
+                raise ValueError("Le numéro de l'emplacement renseigné n'est pas valide")
+            depart = int(depart_str)
+            if depart < 1 or depart > 16:
+                raise ValueError("Veuillez renseigner un emplacement entre 1 et 16")
+            depart = ville.ListeEmplacement[depart - 1]
+            
+            destination_str = input("Séléctionnez un point d'arrivée (1-16) : ")
+            if not destination_str.isdigit():
+                raise ValueError("Veuillez renseigner un emplacement entre 1 et 16")
+            destination = int(destination_str)
+            if destination < 1 or destination > 16:
+                raise ValueError("Le numéro de l'emplacement renseigné n'est pas valide")  
+            destination = ville.ListeEmplacement[destination - 1]
+                
+            if destination == depart:
+                raise ValueError("Veuillez rensigner un autre emplacement que l'emplacement de départ")
+            fluctuations = {
+            (9, 13): 1.2,   # Ralentissement
+            (10, 14): 2   # Fluidification
+            }
+            chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations = fluctuations, fluctuation=True)
+            print("Chemin optimal :", [e.numero for e in chemin], "Distance :", distance)
+            return True
+        except ValueError as e:
+            print("Erreur :", e)
+            return False
 
 if __name__ == "__main__":
     ville.defListEmplacement()
@@ -41,5 +73,5 @@ if __name__ == "__main__":
             e1.voisins.append(e2)
         if e1 not in e2.voisins:
             e2.voisins.append(e1)
-    CalculTrajet()
-    AfficherCarte()
+    if CalculTrajet():
+        AfficherCarte()

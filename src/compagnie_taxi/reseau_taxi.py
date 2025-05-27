@@ -18,10 +18,11 @@ Je définie chaque éléments de la problématique :
 
 
 class Emplacement(object):  
-    def __init__(self, numero : int):
+    def __init__(self, numero : int, *destination : int):
         self.numero : int = numero # numéro = emplacement de la ville
         self.voisins : list = [] # liste des voisins de l'emplacement
         # Dans le principe des gares, on différencie les lignes des voisins mais pas ici car on prends la route.
+        self.destination = destination
         
     def __str__(self):
         return str(self.numero)
@@ -45,7 +46,6 @@ class Emplacement(object):
     def CalculerTrajetVoisins(self, other, destination):
         """
         Calculer le temps de trajet entre 2 emplacements.
-        
         On fixe le trajet à 1 pour le graph
         """
         if not self.EstVoisin(other):
@@ -68,15 +68,25 @@ class Emplacement(object):
                 return 1
         return 30
     
-    def TrajetOpti(self, destination, ListeRoutes):
+   
+    def TrajetOpti(self, destination, ListeRoutes, fluctuations = None, fluctuation: bool = False):
         """
         Calcule le chemin optimal (plus court) entre self et destination en utilisant un algorithme de type Dijkstra.
+        fluctuations : dict optionnel, clé=(e1, e2), valeur=coefficient multiplicateur
         """
         # Création d'un dictionnaire pour retrouver la durée entre deux emplacements
         durees = {}
         for e1, e2, duree in ListeRoutes:
-            durees[(e1, e2)] = duree
-
+            coef = 1.0
+            if fluctuations and fluctuation:
+                key = (e1.numero, e2.numero)
+                key_inv = (e2.numero, e1.numero)
+                if key in fluctuations:
+                    coef = fluctuations[key]
+                elif key_inv in fluctuations:
+                    coef = fluctuations[key_inv]
+            durees[(e1, e2)] = int(duree * coef)
+                    
         # Initialisation
         parcourus = set()
         valeur_dict = {self: 0}

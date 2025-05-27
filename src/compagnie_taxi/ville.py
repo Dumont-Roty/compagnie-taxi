@@ -48,10 +48,3 @@ def defListeRoutes() -> None :
         ListeRoutes.append((ListeEmplacement[e1-1], ListeEmplacement[e2-1], duree))
         ListeRoutes.append((ListeEmplacement[e2-1], ListeEmplacement[e1-1], duree))
     return ListeRoutes
-
-def init_ville(G):
-    defListEmplacement()
-    defListeRoutes()
-
-    G.add_nodes_from(ListeEmplacement)
-    G.add_edges_from([(e1.numero, e2.numero) for e1, e2, _ in ListeRoutes])
