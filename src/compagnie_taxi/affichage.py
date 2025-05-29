@@ -3,14 +3,45 @@ import compagnie_taxi.ville as ville
 import matplotlib.pyplot as plt
 import networkx as nx
 
+def afficher_carte(ville, fluctuations, depart=None, destination=None, chemin=None, pos_fixe=None, ax=None):
+    """
+    Affiche la carte du réseau avec les fluctuations et le chemin optimal si fourni.
+    Retourne la figure matplotlib (pour Streamlit ou affichage direct).
+    """
+    G = nx.Graph()
+    for e1, e2, duree in ville.ListeRoutes:
+        coef = 1.0
+        key = (e1.numero, e2.numero)
+        key_inv = (e2.numero, e1.numero)
+        if key in fluctuations:
+            coef = fluctuations[key]
+        elif key_inv in fluctuations:
+            coef = fluctuations[key_inv]
+        duree_mod = int(duree * coef)
+        G.add_edge(e1.numero, e2.numero, duree=duree_mod)
 
+    if ax is None:
+        fig, ax = plt.subplots()
+    node_colors = []
+    for n in G.nodes():
+        if depart and n == depart.numero:
+            node_colors.append('green')
+        elif destination and n == destination.numero:
+            node_colors.append('red')
+        elif chemin and n in [e.numero for e in chemin]:
+            node_colors.append('orange')
+        else:
+            node_colors.append('skyblue')
+    nx.draw(G, pos_fixe, with_labels=True, ax=ax, node_color=node_colors)
+    edge_labels = nx.get_edge_attributes(G, 'duree')
+    nx.draw_networkx_edge_labels(G, pos_fixe, edge_labels=edge_labels, ax=ax)
+    return ax.figure
 
 def AfficherCarte():
     ville.defListEmplacement()
     ville.defListeRoutes()
     fluctuations = {
-        (9, 13): 1.2,   # Ralentissement
-        (10, 14): 0.8   # Fluidification
+        (9, 13): 1,   # Ralentissement
     }
     G = nx.Graph()
     edges = []
@@ -54,8 +85,7 @@ def CalculTrajet():
             if destination == depart:
                 raise ValueError("Veuillez rensigner un autre emplacement que l'emplacement de départ")
             fluctuations = {
-            (9, 13): 1.2,   # Ralentissement
-            (10, 14): 2   # Fluidification
+            (9, 13): 1,   # Ralentissement
             }
             chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations = fluctuations, fluctuation=True)
             print("Chemin optimal :", [e.numero for e in chemin], "Distance :", distance)
