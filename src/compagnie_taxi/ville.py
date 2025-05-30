@@ -14,6 +14,7 @@ def defListEmplacement() -> None:
     Fonction qui permet de définir la liste des emplacements
     """
     
+    ListeEmplacement.clear()
     emplacements = [Emplacement(i) for i in range(1, 17)] # les empalcements vont de 1 à 16 => range(1,17)
     for point in emplacements : # Pour chaque points, on les mets dans la liste des emplacements
         ListeEmplacement.append(point)
@@ -24,6 +25,7 @@ def defListeRoutes() -> None :
     On va en profiter pour ajouter le temps de trajet entre les points.
     """
    
+    ListeRoutes.clear()
     # Remplace la liste voisinages par celle avec les durées :
     voisinages = [
         (1, 2, 5), (1, 3, 9), (1, 4, 4),
@@ -48,3 +50,12 @@ def defListeRoutes() -> None :
         ListeRoutes.append((ListeEmplacement[e1-1], ListeEmplacement[e2-1], duree))
         ListeRoutes.append((ListeEmplacement[e2-1], ListeEmplacement[e1-1], duree))
     return ListeRoutes
+
+def initialiser_voisins():
+    for e in ListeEmplacement:
+        e.voisins.clear()
+    for e1, e2, duree in ListeRoutes:
+        if e2 not in e1.voisins:
+            e1.voisins.append(e2)
+        if e1 not in e2.voisins:
+            e2.voisins.append(e1)

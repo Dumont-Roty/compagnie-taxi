@@ -1,6 +1,7 @@
 from typing import Dict, Tuple, List
 from compagnie_taxi.ville import ListeEmplacement, ListeRoutes, defListEmplacement, defListeRoutes, initialiser_voisins
 from compagnie_taxi.reseau_taxi import Emplacement
+import streamlit as st
 
 class AnalyseFrequentation:
     def __init__(self, fluctuations: Dict[Tuple[int, int], float] = None, etats_emplacements: Dict[int, str] = None):
@@ -36,3 +37,11 @@ class AnalyseFrequentation:
 
     def top_emplacements(self, emp_freq, n=3):
         return sorted(emp_freq.items(), key=lambda x: x[1], reverse=True)[:n]
+
+@st.cache_data
+def get_frequentation(fluctuations, etats):
+    analyseur = AnalyseFrequentation(fluctuations=fluctuations, etats_emplacements=etats)
+    trajets = analyseur.calculer_tous_trajets()
+    emp_freq = analyseur.frequentation_emplacements(trajets)
+    top3 = analyseur.top_emplacements(emp_freq, n=3)
+    return emp_freq, top3

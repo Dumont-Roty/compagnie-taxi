@@ -1,10 +1,9 @@
 import streamlit as st
-import networkx as nx
 import compagnie_taxi.ville as ville
 from compagnie_taxi.affichage import afficher_carte
-from compagnie_taxi.analyse_frequentation import AnalyseFrequentation
+from compagnie_taxi.analyse_frequentation import get_frequentation
+import networkx as nx
 
-# Initialisation de la ville et du graphe pour fixer les positions
 ville.defListEmplacement()
 ville.defListeRoutes()
 ville.initialiser_voisins()
@@ -12,7 +11,7 @@ ville.initialiser_voisins()
 G_base = nx.Graph()
 for e1, e2, duree in ville.ListeRoutes:
     G_base.add_edge(e1.numero, e2.numero)
-POS_FIXE = nx.spring_layout(G_base, seed=876)  # seed pour reproductibilité
+POS_FIXE = nx.spring_layout(G_base, seed=876)
 
 def main():
     st.markdown("# 🚕 Compagnie Taxi")
@@ -25,36 +24,28 @@ def main():
     # Sidebar
     with st.sidebar:
         st.title("Paramètres")
-        st.markdown("Sélectionnez les paramètres de circulation et d'état des emplacements pour voir l'impact sur la fréquentation du réseau.")
-        st.divider()
-
-        depart_label = st.selectbox("🚦 Point de départ", list(options.keys()), key="depart")
-        destination_label = st.selectbox("🏁 Point d'arrivée", list(options.keys()), key="destination")
+        depart_label = st.selectbox("🚦 Point de départ", list(options.keys()))
+        destination_label = st.selectbox("🏁 Point d'arrivée", list(options.keys()))
         depart = options[depart_label]
         destination = options[destination_label]
-
-        ralentissement_9_13 = st.slider("⏱️ Ralentissement sur la route 9-13", 0.5, 3.0, 1.0, 0.1, help="Facteur multiplicatif de la durée sur la route 9-13.")
-
+        ralentissement_9_13 = st.slider("⏱️ Ralentissement sur la route 9-13", 0.5, 3.0, 1.0, 0.1)
         st.divider()
         st.markdown("### 🚧 Emplacements en travaux")
         all_travaux = st.checkbox("Tous les emplacements en travaux", value=False)
         if all_travaux:
             travaux = [e.numero for e in emplacements]
         else:
-            travaux = st.multiselect(
-                "Sélectionnez les emplacements en travaux",
-                [e.numero for e in emplacements],
-                default=[3, 5, 7, 9, 11]
-            )
+            travaux = st.multiselect("Sélectionnez les emplacements en travaux", [e.numero for e in emplacements], default=[3, 5, 7, 9, 11])
         st.divider()
 
     fluctuations = {(9, 13): ralentissement_9_13}
     etats = {num: "travaux" for num in travaux}
 
-    analyseur = AnalyseFrequentation(fluctuations=fluctuations, etats_emplacements=etats)
-    trajets = analyseur.calculer_tous_trajets()
-    emp_freq = analyseur.frequentation_emplacements(trajets)
-    top3 = analyseur.top_emplacements(emp_freq, n=3)
+    for e in emplacements:
+        e.etat = "travaux" if e.numero in travaux else "normal"
+
+    with st.spinner("Calcul de la fréquentation..."):
+        emp_freq, top3 = get_frequentation(fluctuations, etats)
 
     with st.sidebar:
         st.markdown("### 🏆 Top 3 emplacements les plus fréquentés")
@@ -69,18 +60,12 @@ def main():
         if depart != destination:
             chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations=fluctuations, fluctuation=True)
             st.success(f"Chemin optimal : {' → '.join(str(e.numero) for e in chemin)} | Distance : {distance} min")
-            fig = afficher_carte(
-                ville, fluctuations, depart, destination, chemin, POS_FIXE,
-                node_size=800, font_size=14, figsize=(8, 6)
-            )
+            fig = afficher_carte(ville, fluctuations, depart, destination, chemin, POS_FIXE, node_size=800, font_size=14, figsize=(8, 6))
             st.pyplot(fig)
         else:
             st.warning("Le départ et l'arrivée doivent être différents.")
     else:
-        fig = afficher_carte(
-            ville, fluctuations, depart, destination, None, POS_FIXE,
-            node_size=800, font_size=14, figsize=(8, 6)
-        )
+        fig = afficher_carte(ville, fluctuations, depart, destination, None, POS_FIXE, node_size=800, font_size=14, figsize=(8, 6))
         st.pyplot(fig)
 
 if __name__ == "__main__":
