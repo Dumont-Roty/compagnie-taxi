@@ -3,7 +3,7 @@ import compagnie_taxi.ville as ville
 import matplotlib.pyplot as plt
 import networkx as nx
 
-def afficher_carte(ville, fluctuations, depart=None, destination=None, chemin=None, pos_fixe=None, ax=None):
+def afficher_carte(ville, fluctuations, depart=None, destination=None, chemin=None, pos_fixe=None, ax=None, node_size=800, font_size=14, figsize=(8, 6)):
     """
     Affiche la carte du réseau avec les fluctuations et le chemin optimal si fourni.
     Retourne la figure matplotlib (pour Streamlit ou affichage direct).
@@ -21,10 +21,13 @@ def afficher_carte(ville, fluctuations, depart=None, destination=None, chemin=No
         G.add_edge(e1.numero, e2.numero, duree=duree_mod)
 
     if ax is None:
-        fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=figsize)
     node_colors = []
     for n in G.nodes():
-        if depart and n == depart.numero:
+        emp = next(e for e in ville.ListeEmplacement if e.numero == n)
+        if hasattr(emp, "etat") and emp.etat == "travaux":
+            node_colors.append('gray')
+        elif depart and n == depart.numero:
             node_colors.append('green')
         elif destination and n == destination.numero:
             node_colors.append('red')
@@ -32,9 +35,9 @@ def afficher_carte(ville, fluctuations, depart=None, destination=None, chemin=No
             node_colors.append('orange')
         else:
             node_colors.append('skyblue')
-    nx.draw(G, pos_fixe, with_labels=True, ax=ax, node_color=node_colors)
+    nx.draw(G, pos_fixe, with_labels=True, ax=ax, node_color=node_colors, node_size=node_size, font_size=font_size)
     edge_labels = nx.get_edge_attributes(G, 'duree')
-    nx.draw_networkx_edge_labels(G, pos_fixe, edge_labels=edge_labels, ax=ax)
+    nx.draw_networkx_edge_labels(G, pos_fixe, edge_labels=edge_labels, ax=ax, font_size=font_size-2)
     return ax.figure
 
 def AfficherCarte():
