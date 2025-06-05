@@ -1,7 +1,3 @@
-import sys
-import os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "src"))
-
 import streamlit as st
 import compagnie_taxi.ville as ville
 from compagnie_taxi.affichage import afficher_carte
