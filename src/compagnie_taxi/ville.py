@@ -1,6 +1,6 @@
 # je crée la ville comme on a crée le réseau RATP dans le projet RATP.
 
-from compagnie_taxi.reseau_taxi import Emplacement
+from src.compagnie_taxi.reseau_taxi import Emplacement
 from typing import List, Tuple
 
 #ListeEmplacement : List[Emplacement.numero] = [] # 1 emplacement est 1 point d'arret du taxi

@@ -1,5 +1,5 @@
-from compagnie_taxi.reseau_taxi import *
-import compagnie_taxi.ville as ville
+from src.compagnie_taxi.reseau_taxi import *
+import src.compagnie_taxi.ville as ville
 import matplotlib.pyplot as plt
 import networkx as nx
 

@@ -1,5 +1,5 @@
 import unittest
-from compagnie_taxi.reseau_taxi import Emplacement
+from src.compagnie_taxi.reseau_taxi import Emplacement
 
 class TestEmplacement(unittest.TestCase):
     def setUp(self):

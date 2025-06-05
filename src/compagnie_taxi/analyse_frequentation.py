@@ -1,6 +1,6 @@
 from typing import Dict, Tuple, List
-from compagnie_taxi.ville import ListeEmplacement, ListeRoutes, defListEmplacement, defListeRoutes, initialiser_voisins
-from compagnie_taxi.reseau_taxi import Emplacement
+from src.compagnie_taxi.ville import ListeEmplacement, ListeRoutes, defListEmplacement, defListeRoutes, initialiser_voisins
+from src.compagnie_taxi.reseau_taxi import Emplacement
 import streamlit as st
 
 class AnalyseFrequentation:

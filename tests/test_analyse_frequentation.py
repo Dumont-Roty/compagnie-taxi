@@ -1,5 +1,5 @@
 import unittest
-from compagnie_taxi.analyse_frequentation import AnalyseFrequentation
+from src.compagnie_taxi.analyse_frequentation import AnalyseFrequentation
 
 class TestAnalyseFrequentation(unittest.TestCase):
     def test_frequentation_emplacements(self):
