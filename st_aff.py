@@ -1,7 +1,7 @@
 import streamlit as st
-import compagnie_taxi.ville as ville
-from compagnie_taxi.affichage import afficher_carte
-from compagnie_taxi.analyse_frequentation import get_frequentation
+import src.compagnie_taxi.ville as ville
+from src.compagnie_taxi.affichage import afficher_carte
+from src.compagnie_taxi.analyse_frequentation import get_frequentation
 import networkx as nx
 
 ville.defListEmplacement()
