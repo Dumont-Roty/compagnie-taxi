@@ -1,8 +1,10 @@
-from src.compagnie_taxi.reseau_taxi import *
+from src.compagnie_taxi.reseau_taxi import Emplacement
 import src.compagnie_taxi.ville as ville
 import matplotlib.pyplot as plt
 import networkx as nx
-from typing import Dict, Tuple, Optional, List  # Ajout des imports typing
+import streamlit as st
+import matplotlib.figure
+from typing import Dict, Tuple, Optional, List
 
 def afficher_carte(
     ville,
@@ -37,47 +39,22 @@ def afficher_carte(
     node_colors = []
     for n in G.nodes():
         emp = next(e for e in ville.ListeEmplacement if e.numero == n)
-        if hasattr(emp, "etat") and emp.etat == "travaux":
-            node_colors.append('gray')
-        elif depart and n == depart.numero:
+        if depart and n == depart.numero:
             node_colors.append('green')
         elif destination and n == destination.numero:
             node_colors.append('red')
         elif chemin and n in [e.numero for e in chemin]:
             node_colors.append('orange')
+        elif hasattr(emp, "etat") and emp.etat == "travaux":
+            node_colors.append('gray')
         else:
             node_colors.append('skyblue')
     # Correction : pos_fixe peut être None, donc on passe un dict vide si besoin
     nx.draw(G, pos_fixe or {}, with_labels=True, ax=ax, node_color=node_colors, node_size=node_size, font_size=font_size)
     edge_labels = nx.get_edge_attributes(G, 'duree')
     nx.draw_networkx_edge_labels(G, pos_fixe or {}, edge_labels=edge_labels, ax=ax, font_size=font_size-2)
-    return ax.figure
+    return ax.get_figure()
 
-def AfficherCarte():
-    ville.defListEmplacement()
-    ville.defListeRoutes()
-    fluctuations: Dict[Tuple[int, int], float] = {
-        (9, 13): 1.0,   # Ralentissement
-    }
-    G = nx.Graph()
-    edges = []
-    for e1, e2, duree in ville.ListeRoutes:
-        coef = 1.0
-        key = (e1.numero, e2.numero)
-        key_inv = (e2.numero, e1.numero)
-        if key in fluctuations:
-            coef = fluctuations[key]
-        elif key_inv in fluctuations:
-            coef = fluctuations[key_inv]
-        duree_mod = int(duree * coef)
-        edges.append((e1.numero, e2.numero, {'duree': duree_mod}))
-    G.add_edges_from(edges)
-
-    pos = nx.spring_layout(G, weight='duree')
-    nx.draw(G, pos, with_labels=True)
-    edge_labels = nx.get_edge_attributes(G, 'duree')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    plt.show()
     
 def CalculTrajet():
     while True:
@@ -109,6 +86,18 @@ def CalculTrajet():
         except ValueError as e:
             print("Erreur :", e)
             return False
+        
+def safe_st_pyplot(fig):
+    """Affiche une figure matplotlib dans Streamlit, en gérant les cas SubFigure/None."""
+    if fig is None:
+        st.warning("Aucune figure à afficher.")
+        return
+    if hasattr(fig, 'figure') and isinstance(fig.figure, matplotlib.figure.Figure):
+        fig = fig.figure
+    if isinstance(fig, matplotlib.figure.Figure):
+        st.pyplot(fig)
+    else:
+        st.warning("Impossible d'afficher la figure (type inattendu).")
 
 if __name__ == "__main__":
     ville.defListEmplacement()
@@ -120,4 +109,5 @@ if __name__ == "__main__":
         if e1 not in e2.voisins:
             e2.voisins.append(e1)
     if CalculTrajet():
-        AfficherCarte()
+        fig = afficher_carte(ville, fluctuations={(9, 13): 1.0})
+        plt.show()

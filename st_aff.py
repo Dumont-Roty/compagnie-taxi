@@ -1,6 +1,6 @@
 import streamlit as st
 import src.compagnie_taxi.ville as ville
-from src.compagnie_taxi.affichage import afficher_carte
+from src.compagnie_taxi.affichage import afficher_carte, safe_st_pyplot
 from src.compagnie_taxi.analyse_frequentation import get_frequentation
 import networkx as nx
 
@@ -11,7 +11,7 @@ ville.initialiser_voisins()
 G_base = nx.Graph()
 for e1, e2, duree in ville.ListeRoutes:
     G_base.add_edge(e1.numero, e2.numero)
-POS_FIXE = nx.spring_layout(G_base, seed=876)
+POS_FIXE = dict(nx.spring_layout(G_base, seed=876))
 
 def main():
     st.markdown("# 🚕 Compagnie Taxi")
@@ -61,12 +61,12 @@ def main():
             chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations=fluctuations, fluctuation=True)
             st.success(f"Chemin optimal : {' → '.join(str(e.numero) for e in chemin)} | Distance : {distance} min")
             fig = afficher_carte(ville, fluctuations, depart, destination, chemin, POS_FIXE, node_size=800, font_size=14, figsize=(8, 6))
-            st.pyplot(fig)
+            safe_st_pyplot(fig)
         else:
             st.warning("Le départ et l'arrivée doivent être différents.")
     else:
         fig = afficher_carte(ville, fluctuations, depart, destination, None, POS_FIXE, node_size=800, font_size=14, figsize=(8, 6))
-        st.pyplot(fig)
+        safe_st_pyplot(fig)
 
 if __name__ == "__main__":
     main()
