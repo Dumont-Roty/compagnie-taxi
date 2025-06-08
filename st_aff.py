@@ -23,6 +23,17 @@ def main():
 
     # Sidebar
     with st.sidebar:
+        st.markdown("## 🗺️ Carte du réseau taxi")
+        st.markdown("""
+        **Légende :**
+        - <span style="color:gray; font-weight:bold;">⬤</span> <b>Travaux</b>
+        - <span style="color:green; font-weight:bold;">⬤</span> <b>Départ</b>
+        - <span style="color:red; font-weight:bold;">⬤</span> <b>Arrivée</b>
+        - <span style="color:orange; font-weight:bold;">⬤</span> <b>Trajet optimal</b>
+        - <span style="color:deepskyblue; font-weight:bold;">⬤</span> <b>Normal</b>
+        """, unsafe_allow_html=True)
+        st.markdown("---")
+
         st.title("Paramètres")
         depart_label = st.selectbox("🚦 Point de départ", list(options.keys()))
         destination_label = st.selectbox("🏁 Point d'arrivée", list(options.keys()))
@@ -53,9 +64,7 @@ def main():
             travaux_emoji = " 🚧" if num in travaux else ""
             st.success(f"#{i} : Emplacement {num}{travaux_emoji} — {freq} passages")
 
-    st.markdown("## 🗺️ Carte du réseau taxi")
-    st.markdown("**Légende** : Gris = travaux, Vert = départ, Rouge = arrivée, Orange = trajet optimal, Bleu = normal.")
-
+    
     if st.button("Calculer le trajet optimal"):
         if depart != destination:
             chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations=fluctuations, fluctuation=True)
