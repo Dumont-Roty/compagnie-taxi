@@ -1,40 +1,32 @@
-from typing import Tuple, List
-from graphlib import *
-from dataclasses import dataclass
+from typing import Tuple, List, Dict, Optional
 
 """
 Je définie chaque éléments de la problématique :
     - emplacement (point d'interet dans la ville)
-        Point de base de l'exercice, c'est la liste de produit qui peut etre contenu dans notre recette. Tous les emplacements ne sont pas forcément bon à prendre mais il est necessaire d'en avoir.
-        On va définir les points avec leurs voisins.
-        EST CE QUE LES RALENTISSEMENTS SERONT DANS LES EMPLACEMENTS (je pense pas car ca ne change pas la relation entre les 2)
-    - client (c'est le point d'arrivé et le point de départ mais n'indique pas les démarches à suivre)
-        Il représente le début et la fin de la recette. je sais pas si faut le définir mais c'est aussi un questionnement future pour la problématique. (ajout du taxi plus tard ?)
+    - client (c'est le point d'arrivé et le point de départ)
     - Trajet (point A --> point B ==> OPTIMISATION)
-        C'est la recette, or elle dépend du client et de sa destination (peut etre inutile je sais pas encore --> Trajet dans client peut etre ?)
     - reseau (Tout ce qui compose le reseau de la ville)
     - lignes (connexion entre les emplacements --> Chaque points et chaque durée ?)
 """
 
-
 class Emplacement(object):  
     def __init__(self, numero : int, *destination : int):
-        self.numero : int = numero # numéro = emplacement de la ville
-        self.voisins : list = [] # liste des voisins de l'emplacement
-        # Dans le principe des gares, on différencie les lignes des voisins mais pas ici car on prends la route.
+        self.numero : int = numero
+        self.voisins : List['Emplacement'] = []
         self.destination = destination
-        
+        self.etat: str = "normal"  # Ajout de l'attribut etat
+
     def __str__(self):
         return str(self.numero)
     
     def __eq__(self, other):
-        return self.numero == other.numero # Equivalence de self est self 
+        return isinstance(other, Emplacement) and self.numero == other.numero
     
-    def __neq__(self, other):
-        return self.numero != other.numero # Non équivalence de self n'est pas self
+    def __ne__(self, other):
+        return not self.__eq__(other)
     
     def __hash__(self):
-        return hash(str(self.numero)) # Hash de l'emplacement, nécessaire pour le graphe et doit etre unique 
+        return hash(self.numero)
     
     def __lt__(self, other):
         return self.numero < other.numero
@@ -43,38 +35,11 @@ class Emplacement(object):
         """Retourne True si 'autre' est un voisin de self."""
         return any(voisin.numero == other.numero for voisin in self.voisins)
 
-    def CalculerTrajetVoisins(self, other, destination):
-        """
-        Calculer le temps de trajet entre 2 emplacements.
-        On fixe le trajet à 1 pour le graph
-        """
-        if not self.EstVoisin(other):
-            raise ValueError(f"Il n'y a pas de routes qui relie l'emplacement : {other} de l'emplacement {self}")
-        if ( other.numero == destination.numero):
-            return 1
-        EmplacementActuelle = []
-        EmplacementsVisites = []
-        for emp2 in other.Route:
-            for emp1 in self.Route:
-                if ( emp1 == emp2 ):
-                    EmplacementActuelle.append(emp1)
-                    
-            for emp3 in self.Route:
-                if ( emp3 == emp2 ):
-                    EmplacementsVisites.append(emp3)
-                    
-        for emp in EmplacementsVisites:
-            if emp in EmplacementActuelle:
-                return 1
-        return 30
-    
-   
-    def TrajetOpti(self, destination, ListeRoutes, fluctuations = None, fluctuation: bool = False):
+    def TrajetOpti(self, destination: 'Emplacement', ListeRoutes: List[Tuple['Emplacement', 'Emplacement', int]], fluctuations: Optional[Dict[Tuple[int, int], float]] = None, fluctuation: bool = False):
         """
         Calcule le chemin optimal (plus court) entre self et destination en utilisant un algorithme de type Dijkstra.
         fluctuations : dict optionnel, clé=(e1, e2), valeur=coefficient multiplicateur
         """
-        # Création d'un dictionnaire pour retrouver la durée entre deux emplacements
         durees = {}
         for e1, e2, duree in ListeRoutes:
             coef = 1.0
@@ -87,14 +52,12 @@ class Emplacement(object):
                     coef = fluctuations[key_inv]
             durees[(e1, e2)] = int(duree * coef)
                     
-        # Initialisation
         parcourus = set()
-        valeur_dict = {self: 0}
-        previous = {self: None}
-        a_explorer = [self]
+        valeur_dict: Dict[Emplacement, float] = {self: 0}
+        previous: Dict[Emplacement, Optional[Emplacement]] = {self: None}
+        a_explorer: List[Emplacement] = [self]
 
         while a_explorer:
-            # On prend le noeud avec la plus petite valeur actuelle
             courant = min(a_explorer, key=lambda x: valeur_dict.get(x, float('inf')))
             a_explorer.remove(courant)
             parcourus.add(courant)
@@ -112,62 +75,43 @@ class Emplacement(object):
                     if voisin not in a_explorer:
                         a_explorer.append(voisin)
 
-        # Reconstruction du chemin
         chemin = []
         curr = destination
         if curr not in valeur_dict:
-            return [], float('inf')  # Pas de chemin trouvé
+            return [], float('inf')
         while curr is not None:
             chemin.append(curr)
             curr = previous.get(curr)
         chemin.reverse()
         return chemin, valeur_dict[destination]
             
-            
     def __repr__(self):
         return f"Emplacement(numero={self.numero}, voisins={[v.numero for v in self.voisins]})"
-    
-    
-# class Client(object):
-#     """
-#     Client de la compagnie de taxi
-#     """
-#     def __init__(self, id : int, pointDEP : Emplacement, pointARR : Emplacement):
-#         self.id : int = id
-#         self.depart : Emplacement = pointDEP
-#         self.arrive : Emplacement = pointARR
 
-
-
-class Reseau(object): # Reseau ouy trajet de la compagnie ?
+class Reseau(object):
     """
     Indique tout le réseau de transport de la compagnie
     """
-    def __init__(self): # Pas sur pour le ralentissement --> bool d'un emplacement ?
+    def __init__(self):
         self.ListeEmplacement : List[Emplacement] = []
-        self.ListeRoutes : List[Tuple[Emplacement, Emplacement]] = []
+        self.ListeRoutes : List[Tuple[Emplacement, Emplacement, int]] = []
     
-    def ajouter_emplacement(self, emplacement : int):
+    def ajouter_emplacement(self, emplacement : 'Emplacement'):
         self.ListeEmplacement.append(emplacement)
     
-    def ajouter_routes(self, routes : Tuple[Emplacement,Emplacement]):
-        self.ListeRoutes.append(routes)
+    def ajouter_routes(self, route : Tuple['Emplacement', 'Emplacement', int]):
+        self.ListeRoutes.append(route)
     
     def initialiser_voisins(self):
         for emplacement in self.ListeEmplacement:
-            emplacement.voisins = []
-    
-    def __eq__(self, other): # Equivalence entre le réseau
-        if self.numero == other.numero and self.tempstrajet == other.tempstrajet:
-            return True
-        return False
-    
-    
-# Est ce que on doit définir les voisins comme un objet ? Information immuable ?
+            emplacement.voisins.clear()
+        for e1, e2, duree in self.ListeRoutes:
+            if e2 not in e1.voisins:
+                e1.voisins.append(e2)
+            if e1 not in e2.voisins:
+                e2.voisins.append(e1)
 
-# def EstVoisin(a, b):
-
-@dataclass( frozen = True, unsafe_hash=True )
-class Route:
-    emplacement : List[Emplacement]
-    numero : str
+    def __eq__(self, other):
+        if not isinstance(other, Reseau):
+            return False
+        return self.ListeEmplacement == other.ListeEmplacement and self.ListeRoutes == other.ListeRoutes

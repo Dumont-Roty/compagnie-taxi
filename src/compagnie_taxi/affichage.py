@@ -2,8 +2,20 @@ from src.compagnie_taxi.reseau_taxi import *
 import src.compagnie_taxi.ville as ville
 import matplotlib.pyplot as plt
 import networkx as nx
+from typing import Dict, Tuple, Optional, List  # Ajout des imports typing
 
-def afficher_carte(ville, fluctuations, depart=None, destination=None, chemin=None, pos_fixe=None, ax=None, node_size=800, font_size=14, figsize=(8, 6)):
+def afficher_carte(
+    ville,
+    fluctuations: Dict[Tuple[int, int], float],
+    depart=None,
+    destination=None,
+    chemin: Optional[List['Emplacement']] = None,
+    pos_fixe: Optional[dict] = None,
+    ax=None,
+    node_size=800,
+    font_size=14,
+    figsize=(8, 6)
+):
     """
     Affiche la carte du réseau avec les fluctuations et le chemin optimal si fourni.
     Retourne la figure matplotlib (pour Streamlit ou affichage direct).
@@ -35,16 +47,17 @@ def afficher_carte(ville, fluctuations, depart=None, destination=None, chemin=No
             node_colors.append('orange')
         else:
             node_colors.append('skyblue')
-    nx.draw(G, pos_fixe, with_labels=True, ax=ax, node_color=node_colors, node_size=node_size, font_size=font_size)
+    # Correction : pos_fixe peut être None, donc on passe un dict vide si besoin
+    nx.draw(G, pos_fixe or {}, with_labels=True, ax=ax, node_color=node_colors, node_size=node_size, font_size=font_size)
     edge_labels = nx.get_edge_attributes(G, 'duree')
-    nx.draw_networkx_edge_labels(G, pos_fixe, edge_labels=edge_labels, ax=ax, font_size=font_size-2)
+    nx.draw_networkx_edge_labels(G, pos_fixe or {}, edge_labels=edge_labels, ax=ax, font_size=font_size-2)
     return ax.figure
 
 def AfficherCarte():
     ville.defListEmplacement()
     ville.defListeRoutes()
-    fluctuations = {
-        (9, 13): 1,   # Ralentissement
+    fluctuations: Dict[Tuple[int, int], float] = {
+        (9, 13): 1.0,   # Ralentissement
     }
     G = nx.Graph()
     edges = []
@@ -87,10 +100,10 @@ def CalculTrajet():
                 
             if destination == depart:
                 raise ValueError("Veuillez rensigner un autre emplacement que l'emplacement de départ")
-            fluctuations = {
-            (9, 13): 1,   # Ralentissement
+            fluctuations: Dict[Tuple[int, int], float] = {
+                (9, 13): 1.0,   # Ralentissement
             }
-            chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations = fluctuations, fluctuation=True)
+            chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations=fluctuations, fluctuation=True)
             print("Chemin optimal :", [e.numero for e in chemin], "Distance :", distance)
             return True
         except ValueError as e:

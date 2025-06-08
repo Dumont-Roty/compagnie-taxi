@@ -1,12 +1,9 @@
 # je crée la ville comme on a crée le réseau RATP dans le projet RATP.
-
 from src.compagnie_taxi.reseau_taxi import Emplacement
 from typing import List, Tuple
 
-#ListeEmplacement : List[Emplacement.numero] = [] # 1 emplacement est 1 point d'arret du taxi
-ListeEmplacement : List[int] = [] # 1 emplacement est 1 point d'arret du taxi
-# Test si ListeRoutes prends comme source la class Emplacement (en enlevant la duree)
-ListeRoutes : List[Tuple[int, int]] = []
+ListeEmplacement : List[Emplacement] = [] # 1 emplacement est 1 point d'arret du taxi
+ListeRoutes : List[Tuple[Emplacement, Emplacement, int]] = []
 
 
 def defListEmplacement() -> None:
@@ -49,7 +46,6 @@ def defListeRoutes() -> None :
     for e1, e2, duree in voisinages:
         ListeRoutes.append((ListeEmplacement[e1-1], ListeEmplacement[e2-1], duree))
         ListeRoutes.append((ListeEmplacement[e2-1], ListeEmplacement[e1-1], duree))
-    return ListeRoutes
 
 def initialiser_voisins():
     for e in ListeEmplacement:

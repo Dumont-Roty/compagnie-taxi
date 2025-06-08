@@ -1,10 +1,11 @@
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple, Optional
 from src.compagnie_taxi.ville import ListeEmplacement, ListeRoutes, defListEmplacement, defListeRoutes, initialiser_voisins
-from src.compagnie_taxi.reseau_taxi import Emplacement
 import streamlit as st
 
 class AnalyseFrequentation:
-    def __init__(self, fluctuations: Dict[Tuple[int, int], float] = None, etats_emplacements: Dict[int, str] = None):
+    def __init__(self, 
+                 fluctuations: Optional[Dict[Tuple[int, int], float]] = None, 
+                 etats_emplacements: Optional[Dict[int, str]] = None):
         self.fluctuations = fluctuations if fluctuations else {}
         self.etats_emplacements = etats_emplacements if etats_emplacements else {}
 
