@@ -1,19 +1,33 @@
 from typing import Tuple, List, Dict, Optional
 
 """
-Je définie chaque éléments de la problématique :
-    - emplacement (point d'interet dans la ville)
-    - client (c'est le point d'arrivé et le point de départ)
+Je définis chaque élément de la problématique :
+    - emplacement (point d'intérêt dans la ville)
+    - client (c'est le point d'arrivée et le point de départ)
     - Trajet (point A --> point B ==> OPTIMISATION)
-    - reseau (Tout ce qui compose le reseau de la ville)
-    - lignes (connexion entre les emplacements --> Chaque points et chaque durée ?)
+    - reseau (Tout ce qui compose le réseau de la ville)
+    - lignes (connexion entre les emplacements --> Chaque point et chaque durée ?)
 """
 
-class Emplacement(object):  
-    def __init__(self, numero : int, *destination : int):
+class Emplacement:
+    """
+    Représente un point d'arrêt de taxi dans la ville.
+
+    Attributs :
+        numero (int) : Identifiant unique de l'emplacement.
+        voisins (List[Emplacement]) : Liste des emplacements voisins.
+        etat (str) : État de l'emplacement ('normal', 'travaux', etc.).
+    """
+
+    def __init__(self, numero: int):
+        """
+        Initialise un nouvel emplacement.
+
+        Args:
+            numero (int): Identifiant unique de l'emplacement.
+        """
         self.numero : int = numero
         self.voisins : List['Emplacement'] = []
-        self.destination = destination
         self.etat: str = "normal"  # Ajout de l'attribut etat
 
     def __str__(self):
@@ -31,14 +45,36 @@ class Emplacement(object):
     def __lt__(self, other):
         return self.numero < other.numero
     
-    def EstVoisin(self, other):
-        """Retourne True si 'autre' est un voisin de self."""
-        return any(voisin.numero == other.numero for voisin in self.voisins)
-
-    def TrajetOpti(self, destination: 'Emplacement', ListeRoutes: List[Tuple['Emplacement', 'Emplacement', int]], fluctuations: Optional[Dict[Tuple[int, int], float]] = None, fluctuation: bool = False):
+    def EstVoisin(self, autre: "Emplacement") -> bool:
         """
-        Calcule le chemin optimal (plus court) entre self et destination en utilisant un algorithme de type Dijkstra.
-        fluctuations : dict optionnel, clé=(e1, e2), valeur=coefficient multiplicateur
+        Vérifie si un autre emplacement est voisin de celui-ci.
+
+        Args:
+            autre (Emplacement): L'emplacement à tester.
+
+        Returns:
+            bool: True si 'autre' est un voisin, False sinon.
+        """
+        return any(voisin.numero == autre.numero for voisin in self.voisins)
+
+    def TrajetOpti(
+        self,
+        destination: 'Emplacement',
+        ListeRoutes: List[Tuple['Emplacement', 'Emplacement', int]],
+        fluctuations: Optional[Dict[Tuple[int, int], float]] = None,
+        fluctuation: bool = False
+    ):
+        """
+        Calcule le trajet optimal vers une destination.
+
+        Args:
+            destination (Emplacement): Emplacement d'arrivée.
+            ListeRoutes (List[Tuple[Emplacement, Emplacement, int]]): Liste des routes disponibles.
+            fluctuations (dict, optional): Dictionnaire des ralentissements sur certaines routes.
+            fluctuation (bool, optional): Active la prise en compte des fluctuations.
+
+        Returns:
+            Tuple[List[Emplacement], int]: Chemin optimal et distance totale.
         """
         durees = {}
         for e1, e2, duree in ListeRoutes:
@@ -90,19 +126,38 @@ class Emplacement(object):
 
 class Reseau(object):
     """
-    Indique tout le réseau de transport de la compagnie
+    Indique tout le réseau de transport de la compagnie.
     """
+
     def __init__(self):
+        """
+        Initialise un nouveau réseau de transport.
+        """
         self.ListeEmplacement : List[Emplacement] = []
         self.ListeRoutes : List[Tuple[Emplacement, Emplacement, int]] = []
     
     def ajouter_emplacement(self, emplacement : 'Emplacement'):
+        """
+        Ajoute un nouvel emplacement au réseau.
+
+        Args:
+            emplacement (Emplacement): L'emplacement à ajouter.
+        """
         self.ListeEmplacement.append(emplacement)
     
     def ajouter_routes(self, route : Tuple['Emplacement', 'Emplacement', int]):
+        """
+        Ajoute une nouvelle route au réseau.
+
+        Args:
+            route (Tuple[Emplacement, Emplacement, int]): La route à ajouter.
+        """
         self.ListeRoutes.append(route)
     
     def initialiser_voisins(self):
+        """
+        Met à jour les voisins de chaque emplacement du réseau.
+        """
         for emplacement in self.ListeEmplacement:
             emplacement.voisins.clear()
         for e1, e2, duree in self.ListeRoutes:

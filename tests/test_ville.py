@@ -1,5 +1,6 @@
 import unittest
-import src.compagnie_taxi.ville as ville
+import compagnie_taxi.ville as ville
+from compagnie_taxi.reseau_taxi import Emplacement
 
 class TestVille(unittest.TestCase):
     def setUp(self):
@@ -7,6 +8,7 @@ class TestVille(unittest.TestCase):
         ville.ListeRoutes.clear()
         ville.defListEmplacement()
         ville.defListeRoutes()
+        ville.initialiser_voisins()
 
     def test_nb_emplacements(self):
         # Vérifie qu'il y a bien 16 emplacements
@@ -14,7 +16,6 @@ class TestVille(unittest.TestCase):
 
     def test_emplacement_type(self):
         # Vérifie que chaque élément est bien un Emplacement
-        from compagnie_taxi.reseau_taxi import Emplacement
         for e in ville.ListeEmplacement:
             self.assertIsInstance(e, Emplacement)
 
@@ -30,12 +31,6 @@ class TestVille(unittest.TestCase):
             self.assertIsInstance(duree, int)
 
     def test_voisins_apres_init(self):
-        # Vérifie que les voisins sont bien initialisés
-        for e1, e2, duree in ville.ListeRoutes:
-            if e2 not in e1.voisins:
-                e1.voisins.append(e2)
-            if e1 not in e2.voisins:
-                e2.voisins.append(e1)
         # Chaque route doit être dans les voisins de chaque extrémité
         for e1, e2, duree in ville.ListeRoutes:
             self.assertIn(e2, e1.voisins)

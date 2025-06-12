@@ -1,5 +1,5 @@
 # je crée la ville comme on a crée le réseau RATP dans le projet RATP.
-from src.compagnie_taxi.reseau_taxi import Emplacement
+from compagnie_taxi.reseau_taxi import Emplacement
 from typing import List, Tuple
 
 ListeEmplacement : List[Emplacement] = [] # 1 emplacement est 1 point d'arret du taxi
@@ -8,7 +8,10 @@ ListeRoutes : List[Tuple[Emplacement, Emplacement, int]] = []
 
 def defListEmplacement() -> None:
     """
-    Fonction qui permet de définir la liste des emplacements
+    Initialise la liste globale des emplacements de la ville.
+
+    Cette fonction crée et ajoute tous les objets Emplacement représentant les arrêts de taxi dans la ville.
+    Elle doit être appelée avant toute opération sur les emplacements.
     """
     
     ListeEmplacement.clear()
@@ -16,10 +19,12 @@ def defListEmplacement() -> None:
     for point in emplacements : # Pour chaque points, on les mets dans la liste des emplacements
         ListeEmplacement.append(point)
         
-def defListeRoutes() -> None : 
+def defListeRoutes() -> None:
     """
-    Fonction qui va nous permettre de définir la liste des routes qui connectent les emplacements. Chaque emplacements n'a pas forcément de routes qui le relie à son voisin (de numéro).
-    On va en profiter pour ajouter le temps de trajet entre les points.
+    Initialise la liste globale des routes reliant les emplacements.
+
+    Cette fonction crée et ajoute tous les tuples (Emplacement, Emplacement, durée) représentant les routes de la ville.
+    Elle doit être appelée après defListEmplacement().
     """
    
     ListeRoutes.clear()
@@ -47,7 +52,13 @@ def defListeRoutes() -> None :
         ListeRoutes.append((ListeEmplacement[e1-1], ListeEmplacement[e2-1], duree))
         ListeRoutes.append((ListeEmplacement[e2-1], ListeEmplacement[e1-1], duree))
 
-def initialiser_voisins():
+def initialiser_voisins() -> None:
+    """
+    Met à jour les voisins de chaque emplacement.
+
+    Pour chaque route, ajoute les emplacements connectés comme voisins respectifs.
+    À appeler après l'initialisation des emplacements et des routes.
+    """
     for e in ListeEmplacement:
         e.voisins.clear()
     for e1, e2, duree in ListeRoutes:

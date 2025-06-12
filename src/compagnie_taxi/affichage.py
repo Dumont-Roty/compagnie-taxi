@@ -1,5 +1,5 @@
-from src.compagnie_taxi.reseau_taxi import Emplacement
-import src.compagnie_taxi.ville as ville
+from compagnie_taxi.reseau_taxi import Emplacement
+import compagnie_taxi.ville as ville
 import matplotlib.pyplot as plt
 import networkx as nx
 import streamlit as st
@@ -37,8 +37,9 @@ def afficher_carte(
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize)
     node_colors = []
+    emp_dict = {e.numero: e for e in ville.ListeEmplacement}
     for n in G.nodes():
-        emp = next(e for e in ville.ListeEmplacement if e.numero == n)
+        emp = emp_dict[n]
         if depart and n == depart.numero:
             node_colors.append('green')
         elif destination and n == destination.numero:
@@ -88,7 +89,12 @@ def CalculTrajet():
             return False
         
 def safe_st_pyplot(fig):
-    """Affiche une figure matplotlib dans Streamlit, en gérant les cas SubFigure/None."""
+    """
+    Affiche une figure matplotlib dans Streamlit en toute sécurité.
+
+    Args:
+        fig (matplotlib.figure.Figure): Figure à afficher.
+    """
     if fig is None:
         st.warning("Aucune figure à afficher.")
         return

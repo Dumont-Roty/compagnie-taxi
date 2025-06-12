@@ -4,7 +4,8 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "Pierre DUMONT ROTY", email = "pierre-dr@hotmail.com" }
+    { name = "Pierre DUMONT ROTY", email = "pierre-dr@hotmail.com"},
+    { name = "Rachel MELLOT", email = "rachel.mellot@etu.univ-tours.fr"}
 ]
 requires-python = ">=3.10"
 dependencies = [
@@ -12,9 +13,6 @@ dependencies = [
     "networkx",
     "streamlit"
 ]
-
-[project.scripts]
-compagnie-taxi = "compagnie_taxi:main"
 
 [build-system]
 requires = ["hatchling"]
