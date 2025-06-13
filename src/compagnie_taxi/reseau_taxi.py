@@ -110,7 +110,7 @@ class Emplacement:
                         a_explorer.append(voisin)
 
         chemin = []
-        curr = destination
+        curr: Optional[Emplacement] = destination
         if curr not in valeur_dict:
             return [], float('inf')
         while curr is not None:

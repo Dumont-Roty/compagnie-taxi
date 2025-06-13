@@ -22,7 +22,7 @@ def afficher_carte(
     Affiche la carte du réseau avec les fluctuations et le chemin optimal si fourni.
     Retourne la figure matplotlib (pour Streamlit ou affichage direct).
     """
-    G = nx.Graph()
+    G: nx.Graph = nx.Graph()
     for e1, e2, duree in ville.ListeRoutes:
         coef = 1.0
         key = (e1.numero, e2.numero)
@@ -60,7 +60,10 @@ def afficher_carte(
     return ax.get_figure()
 
     
-def CalculTrajet():
+def CalculTrajet(ville, depart_str: str, destination_str: str, fluctuations):
+    # On convertit les entrées en indices puis en objets Emplacement
+    depart = ville.ListeEmplacement[int(depart_str) - 1]
+    destination = ville.ListeEmplacement[int(destination_str) - 1]
     while True:
         try:
             depart_str = input("Séléctionnez un point de départ (1-16) : ")
@@ -69,7 +72,7 @@ def CalculTrajet():
             depart = int(depart_str)
             if depart < 1 or depart > 16:
                 raise ValueError("Veuillez renseigner un emplacement entre 1 et 16")
-            depart = ville.ListeEmplacement[depart - 1]
+            depart = ville.ListeEmplacement[int(depart_str) - 1]
             
             destination_str = input("Séléctionnez un point d'arrivée (1-16) : ")
             if not destination_str.isdigit():
@@ -77,15 +80,16 @@ def CalculTrajet():
             destination = int(destination_str)
             if destination < 1 or destination > 16:
                 raise ValueError("Le numéro de l'emplacement renseigné n'est pas valide")  
-            destination = ville.ListeEmplacement[destination - 1]
+            destination = ville.ListeEmplacement[int(destination_str) - 1]
                 
             if destination == depart:
                 raise ValueError("Veuillez rensigner un autre emplacement que l'emplacement de départ")
-            fluctuations: Dict[Tuple[int, int], float] = {
+            fluctuations_local: Dict[Tuple[int, int], float] = {
                 (9, 13): 1.0,   # Ralentissement
             }
-            chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations=fluctuations, fluctuation=True)
-            print("Chemin optimal :", [e.numero for e in chemin], "Distance :", distance)
+            # Correction ici : depart et destination sont bien des Emplacement
+            chemin, cout = depart.TrajetOpti(destination, fluctuations_local)
+            print("Chemin optimal :", [e.numero for e in chemin], "Distance :", cout)
             return True
         except ValueError as e:
             print("Erreur :", e)
@@ -117,6 +121,10 @@ if __name__ == "__main__":
             e1.voisins.append(e2)
         if e1 not in e2.voisins:
             e2.voisins.append(e1)
-    if CalculTrajet():
-        fig = afficher_carte(ville, fluctuations={(9, 13): 1.0})
+    # Exemple d'appel avec des valeurs par défaut pour les arguments requis
+    depart_str = "1"
+    destination_str = "16"
+    fluctuations = {(9, 13): 1.0}
+    if CalculTrajet(ville, depart_str, destination_str, fluctuations):
+        fig = afficher_carte(ville, fluctuations=fluctuations)
         plt.show()
