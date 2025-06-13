@@ -1,3 +1,5 @@
+"""Module de gestion de la ville, des emplacements et des routes pour la compagnie de taxi."""
+
 # je crée la ville comme on a crée le réseau RATP dans le projet RATP.
 from compagnie_taxi.reseau_taxi import Emplacement
 from typing import List, Tuple

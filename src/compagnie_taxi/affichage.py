@@ -8,13 +8,13 @@ from typing import Dict, Tuple, Optional, List
 
 def afficher_carte(
     ville,
-    fluctuations: Dict[Tuple[int, int], float],
+    fluctuations,
     depart=None,
     destination=None,
-    chemin: Optional[List['Emplacement']] = None,
-    pos_fixe: Optional[dict] = None,
+    chemin=None,
+    pos_fixe=None,
     ax=None,
-    node_size=800,
+    node_size=200,  # Taille réduite
     font_size=14,
     figsize=(8, 6)
 ):
@@ -51,7 +51,10 @@ def afficher_carte(
         else:
             node_colors.append('skyblue')
     # Correction : pos_fixe peut être None, donc on passe un dict vide si besoin
-    nx.draw(G, pos_fixe or {}, with_labels=True, ax=ax, node_color=node_colors, node_size=node_size, font_size=font_size)
+    nx.draw(
+        G, pos_fixe or {}, with_labels=True, ax=ax,
+        node_color=node_colors, node_size=node_size, font_size=font_size
+    )
     edge_labels = nx.get_edge_attributes(G, 'duree')
     nx.draw_networkx_edge_labels(G, pos_fixe or {}, edge_labels=edge_labels, ax=ax, font_size=font_size-2)
     return ax.get_figure()

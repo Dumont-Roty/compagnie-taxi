@@ -102,5 +102,5 @@ Si vous souhaitez contribuer au projet, n'hésitez pas à soumettre des issues o
 
 ## Auteurs
 
-- **DUMONT ROTY Pierre** - *Etudiant Master MECEN* - [Votre Profil GitHub](https://github.com/Dumont-Roty)
-- **MELLOT Rachel** - *Etudiant Master MECEN* - [Votre Profil GitHub](https://github.com/RachelMellot)
+- **DUMONT ROTY Pierre** - *Etudiant Master MECEN* - [Voir le profil GitHub](https://github.com/Dumont-Roty)
+- **MELLOT Rachel** - *Etudiant Master MECEN* - [Voir le profil GitHub](https://github.com/RachelMellot)

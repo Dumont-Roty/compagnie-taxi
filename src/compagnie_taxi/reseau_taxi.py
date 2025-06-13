@@ -1,13 +1,6 @@
-from typing import Tuple, List, Dict, Optional
+"""Module de gestion des emplacements et du réseau de taxis pour la compagnie."""
 
-"""
-Je définis chaque élément de la problématique :
-    - emplacement (point d'intérêt dans la ville)
-    - client (c'est le point d'arrivée et le point de départ)
-    - Trajet (point A --> point B ==> OPTIMISATION)
-    - reseau (Tout ce qui compose le réseau de la ville)
-    - lignes (connexion entre les emplacements --> Chaque point et chaque durée ?)
-"""
+from typing import Tuple, List, Dict, Optional
 
 class Emplacement:
     """
@@ -28,21 +21,26 @@ class Emplacement:
         """
         self.numero : int = numero
         self.voisins : List['Emplacement'] = []
-        self.etat: str = "normal"  # Ajout de l'attribut etat
+        self.etat: str = "normal"
 
     def __str__(self):
+        """Retourne la représentation chaîne de l'emplacement."""
         return str(self.numero)
     
     def __eq__(self, other):
+        """Teste l'égalité entre deux emplacements (par numéro)."""
         return isinstance(other, Emplacement) and self.numero == other.numero
     
     def __ne__(self, other):
+        """Teste l'inégalité entre deux emplacements (par numéro)."""
         return not self.__eq__(other)
     
     def __hash__(self):
+        """Retourne le hash de l'emplacement (basé sur le numéro)."""
         return hash(self.numero)
     
     def __lt__(self, other):
+        """Permet de comparer deux emplacements selon leur numéro."""
         return self.numero < other.numero
     
     def EstVoisin(self, autre: "Emplacement") -> bool:
@@ -122,11 +120,16 @@ class Emplacement:
         return chemin, valeur_dict[destination]
             
     def __repr__(self):
+        """Retourne une représentation détaillée de l'emplacement (pour le debug)."""
         return f"Emplacement(numero={self.numero}, voisins={[v.numero for v in self.voisins]})"
 
 class Reseau(object):
     """
     Indique tout le réseau de transport de la compagnie.
+
+    Attributs :
+        ListeEmplacement (List[Emplacement]) : Liste des emplacements du réseau.
+        ListeRoutes (List[Tuple[Emplacement, Emplacement, int]]) : Liste des routes du réseau.
     """
 
     def __init__(self):
@@ -167,6 +170,7 @@ class Reseau(object):
                 e2.voisins.append(e1)
 
     def __eq__(self, other):
+        """Teste l'égalité entre deux réseaux (emplacements et routes)."""
         if not isinstance(other, Reseau):
             return False
         return self.ListeEmplacement == other.ListeEmplacement and self.ListeRoutes == other.ListeRoutes
