@@ -9,9 +9,16 @@ authors = [
 ]
 requires-python = ">=3.10"
 dependencies = [
+    "streamlit",
     "matplotlib",
     "networkx",
-    "streamlit"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "coverage"
 ]
 
 [build-system]
