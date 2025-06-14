@@ -2,6 +2,7 @@
 
 from typing import Tuple, List, Dict, Optional
 
+
 class Emplacement:
     """
     Représente un point d'arrêt de taxi dans la ville.
@@ -19,30 +20,30 @@ class Emplacement:
         Args:
             numero (int): Identifiant unique de l'emplacement.
         """
-        self.numero : int = numero
-        self.voisins : List['Emplacement'] = []
+        self.numero: int = numero
+        self.voisins: List["Emplacement"] = []
         self.etat: str = "normal"
 
     def __str__(self):
         """Retourne la représentation chaîne de l'emplacement."""
         return str(self.numero)
-    
+
     def __eq__(self, other):
         """Teste l'égalité entre deux emplacements (par numéro)."""
         return isinstance(other, Emplacement) and self.numero == other.numero
-    
+
     def __ne__(self, other):
         """Teste l'inégalité entre deux emplacements (par numéro)."""
         return not self.__eq__(other)
-    
+
     def __hash__(self):
         """Retourne le hash de l'emplacement (basé sur le numéro)."""
         return hash(self.numero)
-    
+
     def __lt__(self, other):
         """Permet de comparer deux emplacements selon leur numéro."""
         return self.numero < other.numero
-    
+
     def EstVoisin(self, autre: "Emplacement") -> bool:
         """
         Vérifie si un autre emplacement est voisin de celui-ci.
@@ -57,10 +58,10 @@ class Emplacement:
 
     def TrajetOpti(
         self,
-        destination: 'Emplacement',
-        ListeRoutes: List[Tuple['Emplacement', 'Emplacement', int]],
+        destination: "Emplacement",
+        ListeRoutes: List[Tuple["Emplacement", "Emplacement", int]],
         fluctuations: Optional[Dict[Tuple[int, int], float]] = None,
-        fluctuation: bool = False
+        fluctuation: bool = False,
     ):
         """
         Calcule le trajet optimal vers une destination.
@@ -85,14 +86,14 @@ class Emplacement:
                 elif key_inv in fluctuations:
                     coef = fluctuations[key_inv]
             durees[(e1, e2)] = int(duree * coef)
-                    
+
         parcourus = set()
         valeur_dict: Dict[Emplacement, float] = {self: 0}
         previous: Dict[Emplacement, Optional[Emplacement]] = {self: None}
         a_explorer: List[Emplacement] = [self]
 
         while a_explorer:
-            courant = min(a_explorer, key=lambda x: valeur_dict.get(x, float('inf')))
+            courant = min(a_explorer, key=lambda x: valeur_dict.get(x, float("inf")))
             a_explorer.remove(courant)
             parcourus.add(courant)
 
@@ -102,8 +103,10 @@ class Emplacement:
             for voisin in courant.voisins:
                 if voisin in parcourus:
                     continue
-                cout = valeur_dict[courant] + durees.get((courant, voisin), float('inf'))
-                if cout < valeur_dict.get(voisin, float('inf')):
+                cout = valeur_dict[courant] + durees.get(
+                    (courant, voisin), float("inf")
+                )
+                if cout < valeur_dict.get(voisin, float("inf")):
                     valeur_dict[voisin] = cout
                     previous[voisin] = courant
                     if voisin not in a_explorer:
@@ -112,16 +115,17 @@ class Emplacement:
         chemin = []
         curr: Optional[Emplacement] = destination
         if curr not in valeur_dict:
-            return [], float('inf')
+            return [], float("inf")
         while curr is not None:
             chemin.append(curr)
             curr = previous.get(curr)
         chemin.reverse()
         return chemin, valeur_dict[destination]
-            
+
     def __repr__(self):
         """Retourne une représentation détaillée de l'emplacement (pour le debug)."""
         return f"Emplacement(numero={self.numero}, voisins={[v.numero for v in self.voisins]})"
+
 
 class Reseau(object):
     """
@@ -136,10 +140,10 @@ class Reseau(object):
         """
         Initialise un nouveau réseau de transport.
         """
-        self.ListeEmplacement : List[Emplacement] = []
-        self.ListeRoutes : List[Tuple[Emplacement, Emplacement, int]] = []
-    
-    def ajouter_emplacement(self, emplacement : 'Emplacement'):
+        self.ListeEmplacement: List[Emplacement] = []
+        self.ListeRoutes: List[Tuple[Emplacement, Emplacement, int]] = []
+
+    def ajouter_emplacement(self, emplacement: "Emplacement"):
         """
         Ajoute un nouvel emplacement au réseau.
 
@@ -147,8 +151,8 @@ class Reseau(object):
             emplacement (Emplacement): L'emplacement à ajouter.
         """
         self.ListeEmplacement.append(emplacement)
-    
-    def ajouter_routes(self, route : Tuple['Emplacement', 'Emplacement', int]):
+
+    def ajouter_routes(self, route: Tuple["Emplacement", "Emplacement", int]):
         """
         Ajoute une nouvelle route au réseau.
 
@@ -156,7 +160,7 @@ class Reseau(object):
             route (Tuple[Emplacement, Emplacement, int]): La route à ajouter.
         """
         self.ListeRoutes.append(route)
-    
+
     def initialiser_voisins(self):
         """
         Met à jour les voisins de chaque emplacement du réseau.
@@ -173,4 +177,7 @@ class Reseau(object):
         """Teste l'égalité entre deux réseaux (emplacements et routes)."""
         if not isinstance(other, Reseau):
             return False
-        return self.ListeEmplacement == other.ListeEmplacement and self.ListeRoutes == other.ListeRoutes
+        return (
+            self.ListeEmplacement == other.ListeEmplacement
+            and self.ListeRoutes == other.ListeRoutes
+        )

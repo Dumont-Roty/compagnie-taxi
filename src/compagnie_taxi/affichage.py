@@ -1,10 +1,10 @@
-from compagnie_taxi.reseau_taxi import Emplacement
 import compagnie_taxi.ville as ville
 import matplotlib.pyplot as plt
 import networkx as nx
 import streamlit as st
 import matplotlib.figure
-from typing import Dict, Tuple, Optional, List
+from typing import Dict, Tuple
+
 
 def afficher_carte(
     ville,
@@ -16,7 +16,7 @@ def afficher_carte(
     ax=None,
     node_size=200,  # Taille réduite
     font_size=14,
-    figsize=(8, 6)
+    figsize=(8, 6),
 ):
     """
     Affiche la carte du réseau avec les fluctuations et le chemin optimal si fourni.
@@ -41,25 +41,32 @@ def afficher_carte(
     for n in G.nodes():
         emp = emp_dict[n]
         if depart and n == depart.numero:
-            node_colors.append('green')
+            node_colors.append("green")
         elif destination and n == destination.numero:
-            node_colors.append('red')
+            node_colors.append("red")
         elif chemin and n in [e.numero for e in chemin]:
-            node_colors.append('orange')
+            node_colors.append("orange")
         elif hasattr(emp, "etat") and emp.etat == "travaux":
-            node_colors.append('gray')
+            node_colors.append("gray")
         else:
-            node_colors.append('skyblue')
+            node_colors.append("skyblue")
     # Correction : pos_fixe peut être None, donc on passe un dict vide si besoin
     nx.draw(
-        G, pos_fixe or {}, with_labels=True, ax=ax,
-        node_color=node_colors, node_size=node_size, font_size=font_size
+        G,
+        pos_fixe or {},
+        with_labels=True,
+        ax=ax,
+        node_color=node_colors,
+        node_size=node_size,
+        font_size=font_size,
     )
-    edge_labels = nx.get_edge_attributes(G, 'duree')
-    nx.draw_networkx_edge_labels(G, pos_fixe or {}, edge_labels=edge_labels, ax=ax, font_size=font_size-2)
+    edge_labels = nx.get_edge_attributes(G, "duree")
+    nx.draw_networkx_edge_labels(
+        G, pos_fixe or {}, edge_labels=edge_labels, ax=ax, font_size=font_size - 2
+    )
     return ax.get_figure()
 
-    
+
 def CalculTrajet(ville, depart_str: str, destination_str: str, fluctuations):
     # On convertit les entrées en indices puis en objets Emplacement
     depart = ville.ListeEmplacement[int(depart_str) - 1]
@@ -68,24 +75,30 @@ def CalculTrajet(ville, depart_str: str, destination_str: str, fluctuations):
         try:
             depart_str = input("Séléctionnez un point de départ (1-16) : ")
             if not depart_str.isdigit():
-                raise ValueError("Le numéro de l'emplacement renseigné n'est pas valide")
+                raise ValueError(
+                    "Le numéro de l'emplacement renseigné n'est pas valide"
+                )
             depart = int(depart_str)
             if depart < 1 or depart > 16:
                 raise ValueError("Veuillez renseigner un emplacement entre 1 et 16")
             depart = ville.ListeEmplacement[int(depart_str) - 1]
-            
+
             destination_str = input("Séléctionnez un point d'arrivée (1-16) : ")
             if not destination_str.isdigit():
                 raise ValueError("Veuillez renseigner un emplacement entre 1 et 16")
             destination = int(destination_str)
             if destination < 1 or destination > 16:
-                raise ValueError("Le numéro de l'emplacement renseigné n'est pas valide")  
+                raise ValueError(
+                    "Le numéro de l'emplacement renseigné n'est pas valide"
+                )
             destination = ville.ListeEmplacement[int(destination_str) - 1]
-                
+
             if destination == depart:
-                raise ValueError("Veuillez rensigner un autre emplacement que l'emplacement de départ")
+                raise ValueError(
+                    "Veuillez rensigner un autre emplacement que l'emplacement de départ"
+                )
             fluctuations_local: Dict[Tuple[int, int], float] = {
-                (9, 13): 1.0,   # Ralentissement
+                (9, 13): 1.0,  # Ralentissement
             }
             # Correction ici : depart et destination sont bien des Emplacement
             chemin, cout = depart.TrajetOpti(destination, fluctuations_local)
@@ -94,7 +107,8 @@ def CalculTrajet(ville, depart_str: str, destination_str: str, fluctuations):
         except ValueError as e:
             print("Erreur :", e)
             return False
-        
+
+
 def safe_st_pyplot(fig):
     """
     Affiche une figure matplotlib dans Streamlit en toute sécurité.
@@ -105,12 +119,13 @@ def safe_st_pyplot(fig):
     if fig is None:
         st.warning("Aucune figure à afficher.")
         return
-    if hasattr(fig, 'figure') and isinstance(fig.figure, matplotlib.figure.Figure):
+    if hasattr(fig, "figure") and isinstance(fig.figure, matplotlib.figure.Figure):
         fig = fig.figure
     if isinstance(fig, matplotlib.figure.Figure):
         st.pyplot(fig)
     else:
         st.warning("Impossible d'afficher la figure (type inattendu).")
+
 
 if __name__ == "__main__":
     ville.defListEmplacement()

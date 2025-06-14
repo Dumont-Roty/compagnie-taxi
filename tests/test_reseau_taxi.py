@@ -1,6 +1,7 @@
 import unittest
 from compagnie_taxi.reseau_taxi import Emplacement, Reseau
 
+
 class TestEmplacement(unittest.TestCase):
     def setUp(self):
         # Création de 3 emplacements pour les tests
@@ -27,23 +28,17 @@ class TestEmplacement(unittest.TestCase):
         self.assertEqual(hash(self.a), hash(a2))
 
     def test_trajet_opti_simple(self):
-        
-        routes = [
-            (self.a, self.b, 5),
-            (self.b, self.c, 3)
-        ]
+        routes = [(self.a, self.b, 5), (self.b, self.c, 3)]
         chemin, distance = self.a.TrajetOpti(self.c, routes)
         self.assertEqual([e.numero for e in chemin], [1, 2, 3])
         self.assertEqual(distance, 8)
 
     def test_trajet_opti_no_path(self):
         # Aucun chemin entre a et c
-        routes = [
-            (self.a, self.b, 5)
-        ]
+        routes = [(self.a, self.b, 5)]
         chemin, distance = self.a.TrajetOpti(self.c, routes)
         self.assertEqual(chemin, [])
-        self.assertEqual(distance, float('inf'))
+        self.assertEqual(distance, float("inf"))
 
     def test_str_repr_eq_ne_lt_hash(self):
         a = Emplacement(1)
@@ -83,10 +78,12 @@ class TestEmplacement(unittest.TestCase):
         a.voisins = [b]
         b.voisins = [a]
         routes = [(a, b, 10)]
-        chemin, distance = a.TrajetOpti(b, routes, fluctuations={(1, 2): 2.0}, fluctuation=True)
+        chemin, distance = a.TrajetOpti(
+            b, routes, fluctuations={(1, 2): 2.0}, fluctuation=True
+        )
         self.assertEqual(chemin, [a, b])
         self.assertEqual(distance, 20)
 
+
 if __name__ == "__main__":
     unittest.main()
-

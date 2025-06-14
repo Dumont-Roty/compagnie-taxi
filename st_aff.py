@@ -13,9 +13,12 @@ for e1, e2, duree in ville.ListeRoutes:
     G_base.add_edge(e1.numero, e2.numero)
 POS_FIXE = dict(nx.spring_layout(G_base, seed=876))
 
+
 def main():
     st.markdown("# 🚕 Compagnie Taxi")
-    st.markdown("**Analyse de la fréquentation du réseau et aide à la décision pour le placement des taxis.**")
+    st.markdown(
+        "**Analyse de la fréquentation du réseau et aide à la décision pour le placement des taxis.**"
+    )
     st.markdown("---")
 
     emplacements = ville.ListeEmplacement
@@ -24,14 +27,17 @@ def main():
     # Sidebar
     with st.sidebar:
         st.markdown("## 🗺️ Carte du réseau taxi")
-        st.markdown("""
+        st.markdown(
+            """
         **Légende :**
         - <span style="color:gray; font-weight:bold;">⬤</span> <b>Travaux</b>
         - <span style="color:green; font-weight:bold;">⬤</span> <b>Départ</b>
         - <span style="color:red; font-weight:bold;">⬤</span> <b>Arrivée</b>
         - <span style="color:orange; font-weight:bold;">⬤</span> <b>Trajet optimal</b>
         - <span style="color:deepskyblue; font-weight:bold;">⬤</span> <b>Normal</b>
-        """, unsafe_allow_html=True)
+        """,
+            unsafe_allow_html=True,
+        )
         st.markdown("---")
 
         st.title("Paramètres")
@@ -39,14 +45,20 @@ def main():
         destination_label = st.selectbox("🏁 Point d'arrivée", list(options.keys()))
         depart = options[depart_label]
         destination = options[destination_label]
-        ralentissement_9_13 = st.slider("⏱️ Ralentissement sur la route 9-13", 0.5, 3.0, 1.0, 0.1)
+        ralentissement_9_13 = st.slider(
+            "⏱️ Ralentissement sur la route 9-13", 0.5, 3.0, 1.0, 0.1
+        )
         st.divider()
         st.markdown("### 🚧 Emplacements en travaux")
         all_travaux = st.checkbox("Tous les emplacements en travaux", value=False)
         if all_travaux:
             travaux = [e.numero for e in emplacements]
         else:
-            travaux = st.multiselect("Sélectionnez les emplacements en travaux", [e.numero for e in emplacements], default=[3, 5, 7, 9, 11])
+            travaux = st.multiselect(
+                "Sélectionnez les emplacements en travaux",
+                [e.numero for e in emplacements],
+                default=[3, 5, 7, 9, 11],
+            )
         st.divider()
 
     fluctuations = {(9, 13): ralentissement_9_13}
@@ -64,18 +76,45 @@ def main():
             travaux_emoji = " 🚧" if num in travaux else ""
             st.success(f"#{i} : Emplacement {num}{travaux_emoji} — {freq} passages")
 
-    
     if st.button("Calculer le trajet optimal"):
         if depart != destination:
-            chemin, distance = depart.TrajetOpti(destination, ville.ListeRoutes, fluctuations=fluctuations, fluctuation=True)
-            st.success(f"Chemin optimal : {' → '.join(str(e.numero) for e in chemin)} | Distance : {distance} min")
-            fig = afficher_carte(ville, fluctuations, depart, destination, chemin, POS_FIXE, node_size=800, font_size=14, figsize=(8, 6))
+            chemin, distance = depart.TrajetOpti(
+                destination,
+                ville.ListeRoutes,
+                fluctuations=fluctuations,
+                fluctuation=True,
+            )
+            st.success(
+                f"Chemin optimal : {' → '.join(str(e.numero) for e in chemin)} | Distance : {distance} min"
+            )
+            fig = afficher_carte(
+                ville,
+                fluctuations,
+                depart,
+                destination,
+                chemin,
+                POS_FIXE,
+                node_size=800,
+                font_size=14,
+                figsize=(8, 6),
+            )
             safe_st_pyplot(fig)
         else:
             st.warning("Le départ et l'arrivée doivent être différents.")
     else:
-        fig = afficher_carte(ville, fluctuations, depart, destination, None, POS_FIXE, node_size=800, font_size=14, figsize=(8, 6))
+        fig = afficher_carte(
+            ville,
+            fluctuations,
+            depart,
+            destination,
+            None,
+            POS_FIXE,
+            node_size=800,
+            font_size=14,
+            figsize=(8, 6),
+        )
         safe_st_pyplot(fig)
+
 
 if __name__ == "__main__":
     main()

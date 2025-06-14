@@ -1,6 +1,13 @@
 from typing import Dict, Tuple, Optional
-from compagnie_taxi.ville import ListeEmplacement, ListeRoutes, defListEmplacement, defListeRoutes, initialiser_voisins
+from compagnie_taxi.ville import (
+    ListeEmplacement,
+    ListeRoutes,
+    defListEmplacement,
+    defListeRoutes,
+    initialiser_voisins,
+)
 import streamlit as st
+
 
 class AnalyseFrequentation:
     """
@@ -11,9 +18,11 @@ class AnalyseFrequentation:
         etats_emplacements (dict): États particuliers des emplacements.
     """
 
-    def __init__(self, 
-                 fluctuations: Optional[Dict[Tuple[int, int], float]] = None, 
-                 etats_emplacements: Optional[Dict[int, str]] = None):
+    def __init__(
+        self,
+        fluctuations: Optional[Dict[Tuple[int, int], float]] = None,
+        etats_emplacements: Optional[Dict[int, str]] = None,
+    ):
         """
         Initialise l'analyseur de fréquentation.
 
@@ -40,9 +49,14 @@ class AnalyseFrequentation:
             for arrivee in ListeEmplacement:
                 if depart != arrivee:
                     chemin, distance = depart.TrajetOpti(
-                        arrivee, ListeRoutes, fluctuations=self.fluctuations, fluctuation=bool(self.fluctuations)
+                        arrivee,
+                        ListeRoutes,
+                        fluctuations=self.fluctuations,
+                        fluctuation=bool(self.fluctuations),
                     )
-                    distance += sum(1 for e in chemin if getattr(e, "etat", "normal") == "travaux")
+                    distance += sum(
+                        1 for e in chemin if getattr(e, "etat", "normal") == "travaux"
+                    )
                     trajets[(depart.numero, arrivee.numero)] = (chemin, distance)
         return trajets
 
@@ -79,9 +93,12 @@ class AnalyseFrequentation:
         """
         return sorted(emp_freq.items(), key=lambda x: x[1], reverse=True)[:n]
 
+
 @st.cache_data
 def get_frequentation(fluctuations, etats):
-    analyseur = AnalyseFrequentation(fluctuations=fluctuations, etats_emplacements=etats)
+    analyseur = AnalyseFrequentation(
+        fluctuations=fluctuations, etats_emplacements=etats
+    )
     trajets = analyseur.calculer_tous_trajets()
     emp_freq = analyseur.frequentation_emplacements(trajets)
     top3 = analyseur.top_emplacements(emp_freq, n=3)

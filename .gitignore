@@ -1,10 +1,36 @@
-# Python-generated files
+# Fichiers et dossiers Python générés automatiquement
 __pycache__/
-*.py[oc]
+*.pyc
+*.pyo
+*.pyd
+
+# Dossiers de build et distributions
 build/
 dist/
 wheels/
 *.egg-info
 
-# Virtual environments
-.venv
+# Environnements virtuels
+.venv/
+env/
+venv/
+
+# Cache de pytest
+.pytest_cache/
+
+# Cache de mypy
+.mypy_cache/
+
+# Rapport de couverture
+htmlcov/
+.coverage
+
+# Paramètres locaux VS Code
+.vscode/
+
+# Fichiers temporaires divers
+*.log
+.DS_Store
+
+# Cache de Ruff
+.ruff_cache/

@@ -39,6 +39,9 @@ pip install -r requirements.txt
 
 ## Prérequis
 
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![Streamlit](https://img.shields.io/badge/streamlit-%E2%9C%94-green)
+
 - Python 3.8+ : Assurez-vous d'avoir Python installé sur votre machine.
 - [Streamlit](https://streamlit.io/)
 - [NetworkX](https://networkx.org/)

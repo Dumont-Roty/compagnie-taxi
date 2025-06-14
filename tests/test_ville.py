@@ -2,6 +2,7 @@ import unittest
 import compagnie_taxi.ville as ville
 from compagnie_taxi.reseau_taxi import Emplacement
 
+
 class TestVille(unittest.TestCase):
     def setUp(self):
         ville.ListeEmplacement.clear()
@@ -35,6 +36,7 @@ class TestVille(unittest.TestCase):
         for e1, e2, duree in ville.ListeRoutes:
             self.assertIn(e2, e1.voisins)
             self.assertIn(e1, e2.voisins)
+
 
 if __name__ == "__main__":
     unittest.main()
